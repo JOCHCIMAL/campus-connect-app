@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#493fb5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="campus connect">
+    <meta name="description" content="Kabarak University course units and weekly class timetable on Campus Connect.">
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
+    <title>Classes | campus connect</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --page: #f2f0ff;
+            --panel: #fff;
+            --text: #1b1a35;
+            --muted: #667781;
+            --border: #dcd8f4;
+            --primary: #6254d9;
+            --received: #f2f0ff;
+            --input: #f2f0ff;
+        }
+
+        body.dark-mode {
+            color-scheme: dark;
+            --page: #111126;
+            --panel: #1b1a35;
+            --text: #dcd8f4;
+            --muted: #8696a0;
+            --border: #343252;
+            --primary: #6254d9;
+            --received: #24233e;
+            --input: #24233e;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--page);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button, input, select, textarea { font: inherit; }
+
+        button { cursor: pointer; }
+
+        a { color: var(--primary); text-decoration: none; }
+
+        .classes-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .classes-topbar h1 { flex: 1; margin: 0; font-size: 17px; }
+        .classes-topbar a { color: #fff; font-size: 14px; }
+
+        .topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+        .language-selector {
+            padding: 6px 8px;
+            border: 1px solid rgb(255 255 255 / 40%);
+            border-radius: 10px;
+            background: transparent;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .language-selector option { color: var(--text); }
+
+        .theme-button {
+            padding: 6px 10px;
+            border: 1px solid rgb(255 255 255 / 40%);
+            border-radius: 10px;
+            background: transparent;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .classes-main {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 14px 14px 48px;
+        }
+
+        .notice {
+            min-height: 20px;
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .notice.error { color: #d93025; }
+
+        .card {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--panel);
+        }
+
+        .filter-card { display: grid; gap: 10px; margin-bottom: 14px; }
+
+        .filter-row { display: grid; grid-template-columns: 1fr 90px 96px; gap: 8px; }
+
+        .filter-card select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--input);
+            color: var(--text);
+        }
+
+        .my-class-line { margin: 0; color: var(--muted); font-size: 13px; }
+        .my-class-line strong { color: var(--primary); }
+
+        .day-group { margin-bottom: 16px; }
+        .day-title {
+            margin: 0 0 8px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .session-card {
+            display: grid;
+            grid-template-columns: 84px 1fr;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--panel);
+            margin-bottom: 8px;
+        }
+
+        .session-time { color: var(--primary); font-weight: 700; font-size: 14px; }
+        .session-unit { margin: 0 0 2px; font-size: 15px; font-weight: 600; }
+        .session-meta { margin: 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+        .level-chip {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 8px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--primary) 14%, var(--panel));
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .session-open {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 7px 12px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .empty-timetable {
+            padding: 22px;
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .lecturer-card { margin-top: 18px; }
+        .lecturer-card h2 { margin: 0 0 12px; font-size: 16px; }
+        .lecturer-card h3 { margin: 16px 0 8px; font-size: 14px; }
+
+        .form-grid { display: grid; gap: 8px; }
+        .form-grid.two { grid-template-columns: 1fr 1fr; }
+
+        .form-grid label { font-size: 12px; color: var(--muted); }
+
+        .form-grid input, .form-grid select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--input);
+            color: var(--text);
+        }
+
+        .form-button {
+            margin-top: 10px;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .form-button.ghost {
+            margin-left: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .managed-list { display: grid; gap: 6px; margin-top: 8px; }
+
+        .managed-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--received);
+            font-size: 13px;
+        }
+
+        .managed-row span { flex: 1; overflow-wrap: anywhere; }
+
+        .managed-row.wrap { flex-wrap: wrap; }
+
+        .managed-delete {
+            padding: 4px 10px;
+            border: 1px solid #d93025;
+            border-radius: 9px;
+            background: transparent;
+            color: #d93025;
+            font-size: 12px;
+        }
+
+        .register-box {
+            flex-basis: 100%;
+            margin-top: 9px;
+            padding-top: 9px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .register-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .register-code {
+            font-family: ui-monospace, "SFMono-Regular", monospace;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--primary);
+        }
+
+        .register-input {
+            width: 104px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--input);
+            color: var(--text);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .register-button {
+            padding: 8px 13px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .register-button.ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .register-button:disabled { opacity: .55; }
+
+        .register-note { margin: 5px 0 0; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+        .register-note.error { color: #d93025; }
+        .register-note.success { color: var(--primary); font-weight: 600; }
+
+        .register-list {
+            margin: 8px 0 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 4px;
+        }
+
+        .register-list[hidden] { display: none; }
+        .register-list li { font-size: 12px; }
+        .register-list li span { color: var(--muted); }
+
+        .my-studies-card { margin-top: 14px; }
+        .my-studies-card h2 { margin: 0 0 6px; font-size: 16px; }
+        .my-studies-hint { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+        .programme-info { margin: 10px 0 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+        .programme-info strong { color: var(--text); }
+
+        .browse-card { margin-top: 10px; }
+        .browse-card[hidden] { display: none; }
+        .browse-list[hidden] { display: none; }
+
+        .browse-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .browse-row:last-child { border-bottom: none; }
+        .browse-row strong { font-size: 14px; }
+        .browse-row .browse-meta { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+
+        .lecturer-head { display: flex; align-items: center; gap: 10px; }
+
+        .lecturer-avatar {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--primary) 18%, var(--panel));
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .browse-empty { padding: 20px; color: var(--muted); text-align: center; font-size: 13px; }
+
+        @media (max-width: 540px) {
+            .filter-row { grid-template-columns: 1fr 1fr; }
+            .filter-row select:first-child { grid-column: 1 / -1; }
+            .form-grid.two { grid-template-columns: 1fr; }
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/classes-CpFmgxmp.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-BWkgFFPF.js">
+  <link rel="modulepreload" crossorigin href="/assets/offline-banner-MfcCChk8.js">
+  <link rel="modulepreload" crossorigin href="/assets/profile-identity-Dr8T9JaE.js">
+  <link rel="modulepreload" crossorigin href="/assets/staff-verification-CwdSTe46.js">
+  <link rel="modulepreload" crossorigin href="/assets/member-view-CKKBednP.js">
+  <link rel="stylesheet" crossorigin href="/assets/offline-banner-BFBmpa7B.css">
+</head>
+
+<body>
+    <header class="classes-topbar">
+        <a href="/messages.html" data-i18n="← Chats">← Chats</a>
+        <h1 data-i18n="Campus Classes">Campus Classes</h1>
+        <div class="topbar-actions">
+            <label for="language-selector" hidden data-i18n="Language">Language</label>
+            <select id="language-selector" class="language-selector" aria-label="Language" data-i18n-aria-label="Language">
+                <option value="auto" data-i18n="Auto (my phone)">Auto (my phone)</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="sw">Kiswahili</option>
+                <option value="es">Español</option>
+                <option value="ki">Gĩkũyũ</option>
+                <option value="luo">Dholuo</option>
+                <option value="kln">Kalenjin</option>
+                <option value="luy">Luhya</option>
+                <option value="ar">العربية</option>
+                <option value="ha">Hausa</option>
+                <option value="yo">Yorùbá</option>
+                <option value="zu">isiZulu</option>
+                <option value="am">አማርኛ</option>
+                <option value="zh">中文</option>
+                <option value="hi">हिन्दी</option>
+                <option value="pt">Português</option>
+                <option value="ru">Русский</option>
+            </select>
+            <button id="theme-toggle" class="theme-button" type="button" aria-pressed="false"
+                data-i18n="🌙 Night Mode">🌙 Night Mode</button>
+        </div>
+    </header>
+
+    <main class="classes-main">
+        <p id="classes-notice" class="notice" role="status"></p>
+
+        <section class="card filter-card" aria-label="Timetable filters">
+            <div class="filter-row">
+                <select id="programme-filter" aria-label="Programme" data-i18n-aria-label="Programme"></select>
+                <select id="level-filter" aria-label="Level" data-i18n-aria-label="Level">
+                    <option value="" data-i18n="All levels">All levels</option>
+                    <option value="phd" data-i18n="PhD">PhD</option>
+                    <option value="masters" data-i18n="Masters">Masters</option>
+                    <option value="undergraduate" data-i18n="Bachelor">Bachelor</option>
+                    <option value="diploma" data-i18n="Diploma">Diploma</option>
+                    <option value="certificate" data-i18n="Certificate">Certificate</option>
+                </select>
+                <select id="year-filter" aria-label="Year" data-i18n-aria-label="Year">
+                    <option value="" data-i18n="All years">All years</option>
+                </select>
+                <select id="semester-filter" aria-label="Semester" data-i18n-aria-label="Semester">
+                    <option value="" data-i18n="Both">Both</option>
+                    <option value="1" data-i18n="Sem 1">Sem 1</option>
+                    <option value="2" data-i18n="Sem 2">Sem 2</option>
+                </select>
+            </div>
+            <p id="programme-info" class="programme-info"></p>
+            <p id="my-class-line" class="my-class-line"></p>
+        </section>
+
+        <section id="my-studies-card" class="card my-studies-card" hidden>
+            <h2 data-i18n="What do you want to study or teach?">What do you want to study or teach?</h2>
+            <p class="my-studies-hint" data-i18n="Pick a programme above, choose your year and semester here, then save it to your profile. Students see their class level; lecturers see the classes they teach.">Pick a programme above, choose your year and semester here, then save it to your profile. Students see their class level; lecturers see the classes they teach.</p>
+            <div class="filter-row">
+                <label for="study-year" class="visually-hidden" hidden>Year</label>
+                <select id="study-year" aria-label="Your year" data-i18n-aria-label="Your year"></select>
+                <select id="study-semester" aria-label="Your semester" data-i18n-aria-label="Your semester">
+                    <option value="1" data-i18n="Semester 1">Semester 1</option>
+                    <option value="2" data-i18n="Semester 2">Semester 2</option>
+                </select>
+            </div>
+            <button id="save-studies" class="form-button" type="button"
+                data-i18n="Save as my programme">Save as my programme</button>
+            <button id="clear-studies" class="form-button ghost" type="button"
+                data-i18n="Remove my programme">Remove my programme</button>
+        </section>
+
+        <section id="timetable" aria-label="Weekly timetable"></section>
+
+        <section id="explore-units-card" class="card" style="margin-top:14px">
+            <h2 data-i18n="Explore units">Explore units</h2>
+            <p class="my-studies-hint" data-i18n="Browse all units available in your programme. See which lecturer teaches each unit, the year, and semester.">Browse all units available in your programme. See which lecturer teaches each unit, the year, and semester.</p>
+            <div id="explore-units-list" class="browse-list"></div>
+            <h3 data-i18n="Lecturers">Lecturers</h3>
+            <div id="explore-lecturers-list" class="browse-list"></div>
+        </section>
+
+        <section id="lecturer-panel" class="card lecturer-card" hidden>
+            <h2 data-i18n="Lecturer tools">Lecturer tools</h2>
+
+            <h3 data-i18n="My programme (private)">My programme (private)</h3>
+            <p class="my-studies-hint" data-i18n="All lecturers get the same tools. This only fixes which programme your units and class plans open in. You choose it yourself from the school catalogue, it stays yours until you change it, and an admin can correct it.">All lecturers get the same tools. This only fixes which programme your units and class plans open in. You choose it yourself from the school catalogue, it stays yours until you change it, and an admin can correct it.</p>
+            <div class="filter-row">
+                <select id="my-programme" aria-label="My programme" data-i18n-aria-label="My programme"></select>
+                <button id="save-my-programme" class="form-button" type="button" data-i18n="Fix my programme">Fix my programme</button>
+            </div>
+            <p id="my-programme-line" class="my-class-line"></p>
+
+            <h3 data-i18n="Add a unit to this programme">Add a unit to this programme</h3>
+            <form id="unit-form" class="form-grid">
+                <div class="form-grid two">
+                    <div>
+                        <label for="unit-code" data-i18n="Unit code">Unit code</label>
+                        <input id="unit-code" type="text" maxlength="16" required placeholder="CS 101"
+                            data-i18n-placeholder="Unit code">
+                    </div>
+                    <div>
+                        <label for="unit-year" data-i18n="Year">Year</label>
+                        <select id="unit-year"></select>
+                    </div>
+                </div>
+                <div class="form-grid two">
+                    <div>
+                        <label for="unit-title" data-i18n="Unit title">Unit title</label>
+                        <input id="unit-title" type="text" maxlength="120" required>
+                    </div>
+                    <div>
+                        <label for="unit-semester" data-i18n="Semester">Semester</label>
+                        <select id="unit-semester">
+                            <option value="1" data-i18n="Semester 1">Semester 1</option>
+                            <option value="2" data-i18n="Semester 2">Semester 2</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="form-button" type="submit" data-i18n="Add unit">Add unit</button>
+            </form>
+
+            <h3 data-i18n="Plan a weekly class">Plan a weekly class</h3>
+            <form id="session-form" class="form-grid">
+                <div>
+                    <label for="session-unit" data-i18n="Unit">Unit</label>
+                    <select id="session-unit" required></select>
+                </div>
+                <div class="form-grid two">
+                    <div>
+                        <label for="session-weekday" data-i18n="Day">Day</label>
+                        <select id="session-weekday">
+                            <option value="1" data-i18n="Monday">Monday</option>
+                            <option value="2" data-i18n="Tuesday">Tuesday</option>
+                            <option value="3" data-i18n="Wednesday">Wednesday</option>
+                            <option value="4" data-i18n="Thursday">Thursday</option>
+                            <option value="5" data-i18n="Friday">Friday</option>
+                            <option value="6" data-i18n="Saturday">Saturday</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="session-mode" data-i18n="Mode">Mode</label>
+                        <select id="session-mode">
+                            <option value="physical" data-i18n="In a room">In a room</option>
+                            <option value="online" data-i18n="Online class">Online class</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid two">
+                    <div>
+                        <label for="session-start" data-i18n="Start time">Start time</label>
+                        <input id="session-start" type="time" required value="09:00">
+                    </div>
+                    <div>
+                        <label for="session-end" data-i18n="End time">End time</label>
+                        <input id="session-end" type="time" required value="11:00">
+                    </div>
+                </div>
+                <div id="session-room-field">
+                    <label for="session-location" data-i18n="Room or place">Room or place</label>
+                    <input id="session-location" type="text" maxlength="120" placeholder="Room 204, School of Education">
+                </div>
+                <div id="session-online-field" hidden>
+                    <label for="session-link" data-i18n="Meeting link">Meeting link</label>
+                    <input id="session-link" type="url" maxlength="300" placeholder="https://meet...">
+                </div>
+                <div>
+                    <label for="session-note" data-i18n="Note (optional)">Note (optional)</label>
+                    <input id="session-note" type="text" maxlength="160">
+                </div>
+                <button class="form-button" type="submit" data-i18n="Save class plan">Save class plan</button>
+            </form>
+
+            <h3 data-i18n="My units and classes">My units and classes</h3>
+            <p class="session-meta" data-i18n="Open the register in class. The attendance list writes itself from the codes the students type.">Open the register in class. The attendance list writes itself from the codes the students type.</p>
+            <div id="managed-list" class="managed-list"></div>
+        </section>
+    </main>
+
+</body>
+
+</html>

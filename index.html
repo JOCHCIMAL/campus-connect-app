@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#5751d8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="campus connect">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+  <title>campus connect</title>
+
+  <style>
+    :root {
+      --blue: #6254d9;
+      --background: #f2f0ff;
+      --surface: #ffffff;
+      --text: #1b1a35;
+      --muted: #667781;
+      --border: #dcd8f4;
+    }
+
+    body.dark {
+      --blue: #6254d9;
+      --background: #111126;
+      --surface: #1b1a35;
+      --text: #dcd8f4;
+      --muted: #8696a0;
+      --border: #343252;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+      background: var(--background);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 5%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0;
+      color: var(--blue);
+      font-size: 23px;
+      white-space: nowrap;
+    }
+    .brand-stack { display: grid; justify-items: start; gap: 4px; }
+    .mode-toggle {
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--background);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .mode-note { margin: 0; max-width: 360px; font-size: 11px; }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    .language-selector {
+      max-width: 150px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--background);
+      color: var(--text);
+      font: inherit;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .phone-input-row {
+      display: grid;
+      grid-template-columns: minmax(94px, 0.7fr) minmax(0, 2fr);
+      gap: 8px;
+    }
+
+    .settings-menu {
+      position: relative;
+    }
+
+    .settings-menu > summary {
+      list-style: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 14px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+    }
+
+    .settings-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .settings-panel {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 20;
+      display: grid;
+      max-height: min(75dvh, 600px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      gap: 10px;
+      width: min(260px, calc(100vw - 24px));
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: 0 12px 32px #0002;
+    }
+
+    .settings-panel a {
+      display: block;
+      padding: 10px;
+      border-radius: 7px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .settings-panel a:hover {
+      background: var(--background);
+    }
+
+    .settings-panel .language-selector {
+      width: 100%;
+      max-width: none;
+    }
+    html.settings-scroll-lock,
+    body.settings-scroll-lock {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 14px;
+      background: var(--blue);
+      color: white;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .secondary {
+      background: var(--background);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--surface);
+      color: var(--text);
+      margin: 6px 0 12px;
+    }
+
+    .password-control {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .password-control input {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .password-control .password-toggle {
+      flex: 0 0 auto;
+      align-self: flex-start;
+      margin-top: 6px;
+      padding: 12px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .container {
+      width: min(700px, 94%);
+      margin: 22px auto;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .tabs button {
+      flex: 1;
+    }
+
+    .status {
+      white-space: pre-wrap;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .auth-help {
+      margin: 8px 0 0;
+      font-size: 14px;
+    }
+
+    .auth-help button {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      text-decoration: underline;
+    }
+
+    .auth-help button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .error {
+      color: #e53935;
+    }
+
+    .success {
+      color: #16803c;
+    }
+
+    /* Half-saved is neither: green would be a lie, red would say nothing worked. */
+    .warning {
+      color: #a05a00;
+    }
+
+    body.dark .warning {
+      color: #f0a92c;
+    }
+
+    .stories-list {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 8px 2px 14px;
+    }
+
+    .story-card {
+      display: grid;
+      width: 86px;
+      flex: 0 0 86px;
+      justify-items: center;
+      gap: 7px;
+      padding: 0;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .story-preview {
+      display: grid;
+      width: 72px;
+      height: 72px;
+      place-items: center;
+      overflow: hidden;
+      border: 3px solid #7b6df0;
+      border-radius: 50%;
+      background: #e9e6ff;
+      color: #5345c6;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .story-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .story-label {
+      width: 100%;
+      overflow: hidden;
+      font-size: 12px;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .story-viewer {
+      width: min(520px, 94vw);
+      max-height: 90vh;
+      padding: 20px;
+      overflow-y: auto;
+      border: 0;
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .story-viewer::backdrop {
+      background: rgb(0 0 0 / 75%);
+    }
+
+    .story-media {
+      display: block;
+      width: 100%;
+      max-height: 65vh;
+      margin: 12px 0;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    .post-image, .post-video {
+      display: block;
+      max-width: 100%;
+      max-height: 450px;
+      margin-top: 12px;
+      border-radius: 8px;
+    }
+    .post-video-wrap {
+      position: relative;
+      width: fit-content;
+      max-width: 100%;
+    }
+    .post-video-wrap .post-video { width: 100%; }
+    .post-video-mute {
+      position: absolute;
+      right: 10px;
+      bottom: 22px;
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid #ffffff80;
+      border-radius: 50%;
+      background: #111a;
+      color: white;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    .comment-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .comment-form input {
+      margin: 0;
+    }
+
+    .comment-form button {
+      white-space: nowrap;
+    }
+
+    #profileAvatarPreview {
+      display: block;
+      width: 96px;
+      height: 96px;
+      margin: 10px 0;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    #profile:not(:target) {
+      display: none;
+    }
+
+    .owner-about {
+      line-height: 1.6;
+    }
+
+    .owner-about p {
+      margin: 6px 0;
+      font-size: 14px;
+    }
+
+    .app-owner-name {
+      display: block;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: .01em;
+    }
+
+    #profileDetails {
+      line-height: 1.7;
+    }
+
+    #profileDetails .profile-avatar {
+      width: 64px;
+      height: 64px;
+      margin-right: 10px;
+      border-radius: 50%;
+      object-fit: cover;
+      vertical-align: middle;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      z-index: 20;
+      left: 50%;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: min(560px, calc(100% - 24px));
+      min-height: 66px;
+      padding: 6px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 62%, transparent);
+      box-shadow: 0 10px 30px rgb(20 40 60 / 16%);
+      -webkit-backdrop-filter: blur(22px) saturate(1.8);
+      backdrop-filter: blur(22px) saturate(1.8);
+    }
+
+    .bottom-nav[hidden] { display: none; }
+
+    .bottom-nav a {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bottom-nav a:hover,
+    .bottom-nav a.active {
+      color: #6254d9;
+    }
+
+    .bottom-nav svg {
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Instagram surfaces: white/black page, hairline dividers, blue accent. */
+    :root {
+      --blue: #6254d9;
+      --background: #f6f4ff;
+      --surface: #ffffff;
+      --text: #111126;
+      --muted: #737373;
+      --border: #dcd8f4;
+    }
+
+    body.dark {
+      --blue: #6254d9;
+      --background: #111126;
+      --surface: #1b1a35;
+      --text: #ffffff;
+      --muted: #a8a8a8;
+      --border: #343252;
+    }
+
+    body {
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    header {
+      padding: 13px max(16px, calc((100% - 1080px) / 2));
+      box-shadow: 0 2px 10px rgb(28 48 66 / 5%);
+    }
+
+    header h1 { letter-spacing: -.6px; }
+    header > div { flex-wrap: wrap; justify-content: flex-end; }
+    button { border-radius: 10px; transition: filter .16s ease, transform .16s ease; }
+    button:hover:not(:disabled) { filter: brightness(.97); }
+    .secondary, input, textarea { border-radius: 12px; }
+    input, textarea { padding: 13px 14px; }
+    input:focus, textarea:focus { border-color: var(--blue); outline: 3px solid rgb(51 144 236 / 14%); }
+    .container { width: min(720px, 94%); margin-top: 28px; }
+    .card { border-color: var(--border); border-radius: 16px; box-shadow: 0 4px 18px rgb(28 48 66 / 5%); }
+    #authSection { max-width: 580px; margin: 32px auto; padding: 24px; padding: clamp(20px, 5vw, 38px); }
+    .auth-entry { display: flex; gap: 10px; justify-content: center; max-width: 580px; margin: 18px auto 0; }
+    .auth-entry button { border: 1px solid var(--blue); border-radius: 999px; background: var(--blue); color: #fff; padding: 10px 22px; font: inherit; cursor: pointer; }
+    .auth-entry button.secondary { background: transparent; color: var(--blue); }
+    #authSection .auth-close { float: right; margin: -8px -8px 0 0; border: 0; background: transparent; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; }
+    #authSection > h2 { margin-top: 0; font-size: 28px; font-size: clamp(24px, 4vw, 32px); letter-spacing: -.8px; }
+    #loginForm h3, #registerForm h3 { margin-top: 22px; }
+    .tabs { padding: 4px; border-radius: 12px; background: var(--background); }
+    .tabs button { border-radius: 9px; }
+    .tabs button.secondary { border-color: transparent; background: transparent; }
+    .tabs button:not(.secondary) { box-shadow: 0 2px 6px rgb(28 48 66 / 12%); }
+    .updates-title { margin: 4px 0 18px; font-size: 28px; font-size: clamp(26px, 5vw, 32px); font-weight: 800; letter-spacing: -.9px; }
+    .updates-section-head { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; }
+    .updates-section-head h2 { margin: 0; font-size: 18px; font-weight: 700; }
+    .updates-section-head .spacer { flex: 1; }
+    .updates-icon-button { display: grid; width: 40px; height: 40px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--text) 7%, var(--surface)); color: var(--text); cursor: pointer; }
+    .updates-icon-button:hover { background: color-mix(in srgb, var(--blue) 16%, var(--surface)); }
+    .updates-icon-button svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    /* The Updates screen sits flat on the page, like Instagram. */
+    #stories.card { border: 0; border-radius: 0; box-shadow: none; color: var(--text); }
+    .updates-section-head h2 { font-weight: 600; letter-spacing: -.2px; }
+    #stories .stories-list { gap: 15px; padding: 2px 0 8px; }
+    #stories .story-card { display: grid; width: 78px; flex: 0 0 78px; gap: 6px; place-items: center; padding: 2px 0; border: 0; background: transparent; color: var(--text); cursor: pointer; }
+    #stories .story-card:hover { background: transparent; }
+    .story-ring { position: relative; display: grid; width: 72px; height: 72px; place-items: center; padding: 3px; border-radius: 50%; background: conic-gradient(from 205deg, #f9ce34, #ee2a7b 38%, #6228d7 74%, #f9ce34); }
+    .story-ring.seen { background: var(--border); }
+    .story-thumb { display: grid; width: 100%; height: 100%; place-items: center; overflow: hidden; border: 3px solid var(--surface); border-radius: 50%; background: color-mix(in srgb, var(--text) 10%, var(--surface)); color: var(--text); font-size: 23px; font-weight: 600; }
+    .story-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .story-add-badge { position: absolute; right: -2px; bottom: 3px; display: grid; width: 22px; height: 22px; place-items: center; border: 2.5px solid var(--surface); border-radius: 50%; background: #6254d9; color: #fff; font-size: 13px; font-weight: 700; line-height: 1; }
+    .story-label { width: 100%; overflow: hidden; color: var(--text); font-size: 13px; font-weight: 500; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Instagram-style full-screen status viewer (dark like Instagram). */
+    .story-viewer--full { width: min(420px, 100vw); height: min(100dvh, 880px); max-height: none; margin: auto; padding: 0; border: 0; border-radius: 0; overflow: hidden; background: #000; color: #fff; }
+    @media (min-width: 520px) {
+      .story-viewer--full { border-radius: 12px; }
+    }
+    .story-viewer--full::backdrop { background: rgb(0 0 0 / 82%); }
+    .story-shell { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+    .story-stage { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: grid; place-items: center; overflow: hidden; }
+    #storyViewer .story-media { width: 100%; height: 100%; max-height: none; margin: 0; border-radius: 0; background: #000; object-fit: contain; }
+    .story-stage-text { display: flex; width: 100%; height: 100%; flex-direction: column; justify-content: safe center; align-items: center; padding: 78px 24px 92px; overflow-y: auto; background: linear-gradient(150deg, #405de6, #833ab4 42%, #e1306c 72%, #f77737); color: #fff; font-size: 32px; font-size: clamp(27px, 7.4vw, 40px); font-weight: 800; letter-spacing: -.012em; line-height: 1.55; text-align: center; text-shadow: 0 2px 14px rgb(0 0 0 / 48%); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .story-empty { padding: 24px; color: rgb(255 255 255 / 86%); font-size: 19px; font-weight: 600; text-align: center; }
+    .story-caption { position: absolute; right: 0; bottom: 0; left: 0; z-index: 2; max-height: 44%; overflow-y: auto; padding: 34px 16px 22px; background: linear-gradient(transparent, rgb(0 0 0 / 86%)); color: #fff; font-size: 18px; font-weight: 600; line-height: 1.5; text-shadow: 0 1px 8px rgb(0 0 0 / 70%); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .story-progress { position: absolute; top: 9px; right: 12px; left: 12px; z-index: 4; display: flex; gap: 4px; }
+    .story-bar { position: relative; flex: 1; height: 2px; overflow: hidden; border-radius: 3px; background: rgb(255 255 255 / 32%); }
+    .story-bar > i { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: block; transform: scaleX(0); transform-origin: left; background: #fff; }
+    .story-bar.done > i { transform: scaleX(1); }
+    .story-bar.active > i { animation: story-fill var(--story-duration, 6s) linear forwards; }
+    @keyframes story-fill { to { transform: scaleX(1); } }
+    .story-head { position: absolute; top: 18px; right: 0; left: 0; z-index: 4; display: flex; align-items: center; gap: 10px; padding: 6px 10px 18px; background: linear-gradient(rgb(0 0 0 / 62%), transparent); }
+    .story-head-thumb { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; overflow: hidden; border-radius: 50%; background: #343252; color: #fff; font-size: 14px; font-weight: 700; }
+    .story-head-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .story-head-meta { display: grid; flex: 1; min-width: 0; margin-right: auto; gap: 1px; }
+    .story-head-name { overflow: hidden; font-size: 16px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 1px 6px rgb(0 0 0 / 55%); }
+    .story-head-time { color: rgb(255 255 255 / 86%); font-size: 13px; font-weight: 500; text-shadow: 0 1px 6px rgb(0 0 0 / 55%); }
+    .story-head-action { display: grid; width: 34px; height: 34px; flex: 0 0 34px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: transparent; color: #fff; cursor: pointer; }
+    .story-head-action[hidden] { display: none; }
+    .story-head-action:hover { filter: none; background: rgb(255 255 255 / 14%); }
+    .story-head-action svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .story-sound-off { display: none; }
+    .sound-muted .story-sound-on { display: none; }
+    .sound-muted .story-sound-off { display: block; }
+    .story-close { width: 34px; height: 34px; flex: 0 0 34px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #fff; font-size: 19px; line-height: 1; cursor: pointer; }
+    .story-close:hover { filter: none; background: rgb(255 255 255 / 14%); }
+    .story-side { position: absolute; top: 76px; bottom: 0; z-index: 3; width: 36%; padding: 0; border: 0; border-radius: 0; background: transparent; cursor: pointer; }
+    .story-side--prev { left: 0; }
+    .story-side--next { right: 0; }
+    .story-side:disabled { display: none; }
+    .story-side-icon { position: absolute; top: 50%; display: grid; width: 34px; height: 34px; place-items: center; transform: translateY(-50%); border-radius: 50%; background: rgb(254 254 254 / 22%); color: #fff; font-size: 20px; line-height: 1; pointer-events: none; }
+    .story-side--prev .story-side-icon { left: 10px; }
+    .story-side--next .story-side-icon { right: 10px; }
+    .story-side:hover .story-side-icon { background: rgb(254 254 254 / 34%); }
+    .story-footer { position: absolute; right: 0; bottom: 0; left: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 12px 12px calc(12px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgb(0 0 0 / 82%)); }
+    .story-footer[hidden] { display: none; }
+    .story-like-btn { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; padding: 8px 10px; border: 0; border-radius: 20px; background: rgb(255 255 255 / 14%); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .story-like-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .story-like-btn.liked { color: #ff2d55; }
+    .story-like-btn.liked svg { fill: #ff2d55; stroke: #ff2d55; }
+    .story-like-count { min-width: 8px; }
+    .story-footer { position: relative; }
+    .story-react-btn { display: inline-flex; align-items: center; padding: 8px 6px; border: 0; background: transparent; font-size: 22px; cursor: pointer; color: inherit; }
+    .story-reaction-row { position: absolute; left: 50%; transform: translateX(-50%); bottom: 74px; display: flex; gap: 4px; background: rgba(0, 0, 0, 0.6); padding: 6px 10px; border-radius: 999px; z-index: 5; }
+    .story-reaction-row[hidden] { display: none; }
+    .story-reaction-row button { border: 0; background: transparent; font-size: 26px; line-height: 1; cursor: pointer; padding: 2px 4px; }
+    .story-reaction-row button.mine { outline: 2px solid rgba(255, 255, 255, 0.85); border-radius: 50%; }
+    .story-reply-form { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; }
+    .story-reply-input { flex: 1; min-width: 0; padding: 10px 14px; border: 1px solid rgb(255 255 255 / 42%); border-radius: 22px; background: rgb(0 0 0 / 40%); color: #fff; font-size: 15px; }
+    .story-reply-input::placeholder { color: rgb(255 255 255 / 66%); }
+    .story-reply-send { display: grid; width: 40px; height: 40px; flex: 0 0 40px; place-items: center; border: 0; border-radius: 50%; background: #0866ff; color: #fff; cursor: pointer; }
+    .story-reply-send:disabled { opacity: .6; cursor: default; }
+    .story-reply-send svg { width: 20px; height: 20px; fill: currentColor; }
+    .story-reply-status { position: absolute; right: 14px; bottom: calc(100% + 6px); color: #fff; font-size: 13px; font-weight: 600; text-shadow: 0 1px 6px rgb(0 0 0 / 60%); }
+
+    /* ============ FEED — INSTAGRAM POSTS ============ */
+    .feed-shell { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+    .feed-shell > h2 { padding: 14px 2px 10px; margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
+    .feed-shell > #refreshFeedButton, .feed-shell > .status { margin-right: 2px; margin-left: 2px; }
+    /* The campus zone is one chip wide: it says what you are looking at, and one tap flips it. */
+    .campus-zone { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 2px 10px; }
+    .campus-chip { width: auto; padding: 6px 14px; border: 1px solid color-mix(in srgb, var(--blue) 45%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--blue) 12%, var(--surface)); color: var(--blue); font-size: .82rem; font-weight: 600; }
+    .campus-chip.unknown { border-color: rgb(255 179 71 / 55%); background: rgb(255 179 71 / 14%); color: #b26a00; }
+    body.dark .campus-chip.unknown { color: #ffcc80; }
+
+    /* A placement a hostel or a print shop paid for, sold by hand outside this
+       app. It sits above the students' own posts and says in its own words
+       that it is an advertisement, so nobody has to work out which is which. */
+    .promoted-list { display: grid; gap: 10px; margin: 0 2px 12px; }
+    .promoted-card { padding: 14px; border: 1px solid color-mix(in srgb, var(--blue) 34%, var(--border)); border-radius: 14px; background: var(--surface); }
+    .promoted-flag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--blue); border: 1px solid color-mix(in srgb, var(--blue) 45%, transparent); background: color-mix(in srgb, var(--blue) 12%, var(--surface)); }
+    .promoted-business { margin: 8px 0 2px; font-size: 14px; font-weight: 700; }
+    .promoted-headline { margin: 0 0 6px; font-size: 17px; }
+    .promoted-body { margin: 0 0 8px; color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+    .promoted-image { display: block; width: 100%; max-height: 420px; object-fit: cover; border-radius: 10px; margin: 8px 0; }
+    .promoted-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .promoted-actions a { display: inline-block; padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--blue); border: 1px solid color-mix(in srgb, var(--blue) 40%, transparent); background: color-mix(in srgb, var(--blue) 10%, var(--surface)); overflow-wrap: anywhere; }
+    .promoted-closes { margin-left: auto; font-size: 12px; color: var(--muted); }
+    .promotion-list { display: grid; gap: 10px; }
+    .promotion-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 10px; }
+    .promotion-row .promotion-meta { flex: 1 1 200px; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+    .promotion-form { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+    .promotion-form label { font-size: 13px; }
+    .promotion-form .promotion-wide { grid-column: 1 / -1; }
+    .bulletin-body { display: grid; gap: 10px; margin-top: 4px; }
+    .bulletin-item { padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: color-mix(in srgb, var(--text) 3%, var(--surface)); }
+    .bulletin-item h3 { margin: 0 0 4px; font-size: 15px; font-weight: 700; }
+    .bulletin-item p { margin: 0; font-size: 14px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .bulletin-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 6px; font-size: 11.5px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--muted); }
+    .bulletin-meta .bulletin-section { color: var(--blue); }
+    .bulletin-link { display: inline-block; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--blue); text-decoration: none; overflow-wrap: anywhere; }
+    .bulletin-empty { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+    .bulletin-write { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .bulletin-write h3 { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
+    .bulletin-write textarea { min-height: 96px; }
+    .bulletin-item.note { border-style: dashed; background: transparent; }
+    .bulletin-item.note h3 { font-size: 14px; color: var(--muted); }
+    .bulletin-media { margin-top: 8px; }
+    .bulletin-media-frame { position: relative; overflow: hidden; border-radius: 10px; background: #000; }
+    .bulletin-media-frame img, .bulletin-media-frame video { display: block; width: 100%; max-height: 420px; object-fit: contain; }
+    /* An account outside the university reads the board and nothing else. */
+    body.bulletin-only #stories,
+    body.bulletin-only #adminPanel,
+    body.bulletin-only #youSetupCard,
+    body.bulletin-only #youStatusButton,
+    body.bulletin-only #youQrButton,
+    body.bulletin-only #youEditButton,
+    body.bulletin-only .campus-only,
+    body.bulletin-only .feed-shell,
+    body.bulletin-only .bottom-nav a:not([data-destination="profile"]) { display: none !important; }
+    /* Other schools sit under their own label: a chip inside the sideways
+       status rail, a rule across the feed. */
+    .campus-other-heading { flex: 0 0 auto; align-self: center; margin: 0 2px; padding: 5px 10px; border-radius: 999px; background: color-mix(in srgb, var(--text) 7%, var(--surface)); color: var(--muted); font-size: .74rem; font-weight: 700; white-space: nowrap; }
+    #feed > .campus-other-heading { width: auto; align-self: auto; margin: 14px 2px 6px; padding: 10px 0 0; border-radius: 0; border-top: 1px solid var(--border); background: none; font-size: .76rem; letter-spacing: .3px; text-transform: uppercase; }
+    .ig-post { padding: 0 0 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .ig-post-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+    .ig-post-avatar { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; overflow: hidden; border-radius: 50%; background: color-mix(in srgb, var(--text) 12%, var(--surface)); color: var(--text); font-size: 14px; font-weight: 700; }
+    .ig-post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .ig-post-headline { display: grid; flex: 1; min-width: 0; gap: 1px; }
+    .ig-post-author { overflow: hidden; font-size: 14px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    .ig-post-time { color: var(--muted); font-size: 12px; }
+    .ig-post .post-video-wrap { position: relative; width: 100%; background: color-mix(in srgb, var(--text) 5%, var(--surface)); }
+    .ig-post img.post-image { display: block; width: 100%; max-height: 74vh; margin: 0; border-radius: 0; object-fit: cover; }
+    .ig-post video.post-video { display: block; width: 100%; max-height: 74vh; margin: 0; border-radius: 0; object-fit: contain; background: #000; }
+    .post-voice-wrap, .voice-swap { width: 100%; padding: 16px 12px; background: color-mix(in srgb, var(--text) 4%, var(--surface)); }
+    .voice-swap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .voice-note { color: var(--muted); font-size: 11px; text-align: center; }
+    .story-voice { display: grid; min-height: 180px; padding: 26px 16px; place-items: center; }
+    .voice-audio { display: none; }
+    .voice-player { display: flex; width: min(320px, 100%); flex-direction: column; gap: 3px; margin: 0 auto; }
+    .voice-row { display: flex; align-items: center; gap: 10px; }
+    .voice-play { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border: 0; border-radius: 50%; background: var(--blue); color: #fff; font-size: 11px; cursor: pointer; }
+    .voice-wave { position: relative; display: flex; flex: 1; align-items: center; gap: 1.5px; height: 22px; min-width: 0; }
+    .voice-wave i { flex: 1; min-width: 1.5px; border-radius: 1px; background: color-mix(in srgb, var(--muted) 45%, transparent); }
+    .voice-wave i.played { background: var(--blue); }
+    .voice-dot { position: absolute; top: 50%; left: 0; z-index: 1; width: 11px; height: 11px; border-radius: 50%; background: var(--blue); opacity: 0; transform: translate(-50%, -50%); transition: left .12s linear; }
+    .voice-meta { display: flex; min-height: 14px; padding-left: 3px; }
+    .voice-duration { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .post-file { display: block; padding: 14px 12px; color: var(--text); font-size: 14px; text-decoration: none; background: color-mix(in srgb, var(--text) 4%, var(--surface)); }
+    .post-file:hover { text-decoration: underline; }
+    .post-media-fallback { display: grid; gap: 8px; padding: 24px 14px; background: color-mix(in srgb, var(--text) 4%, var(--surface)); color: var(--muted); font-size: 14px; text-align: center; }
+    .post-media-fallback a { color: var(--blue); font-weight: 600; }
+    .post-media-fallback button { justify-self: center; padding: 7px 14px; border: 0; border-radius: 999px; background: var(--blue); color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+    /* An unplayable clip keeps its frame; the notice lies over the bottom of it so the video stays a video. */
+    .post-media-fallback.post-media-overlay { position: absolute; top: auto; right: 0; bottom: 0; left: 0; padding: 22px 14px 14px; background: linear-gradient(to top, rgba(0, 0, 0, .82), rgba(0, 0, 0, .35) 70%, transparent); color: #fff; }
+    .post-media-fallback.post-media-overlay button { background: var(--blue); }
+    .ig-post-bar { display: flex; align-items: center; gap: 14px; padding: 8px 10px 2px; }
+    .ig-icon-button { display: inline-flex; align-items: center; gap: 6px; padding: 4px; border: 0; border-radius: 8px; background: transparent; color: var(--text); font: inherit; cursor: pointer; }
+    .ig-icon-button:hover { filter: none; opacity: .6; }
+    .ig-icon-button:disabled { opacity: .4; cursor: default; }
+    .ig-icon-button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .ig-like.is-on { color: #ed4956; }
+    .ig-like.is-on svg, .ig-save.is-on svg { fill: currentColor; }
+    .ig-save { margin-left: auto; }
+    .ig-count { font-size: 14px; font-weight: 600; }
+    .ig-post-caption { margin: 4px 14px 0; font-size: 14px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .ig-caption-author { margin-right: 5px; font-weight: 600; }
+    .ig-caption-full { display: none; }
+    .ig-post-caption.open .ig-caption-short, .ig-post-caption.open .ig-more { display: none; }
+    .ig-post-caption.open .ig-caption-full { display: inline; }
+    .ig-more { padding: 0; border: 0; background: none; color: var(--muted); font: inherit; cursor: pointer; }
+    .ig-comments-toggle { margin: 6px 14px 0; padding: 0; border: 0; background: none; color: var(--muted); font-size: 14px; cursor: pointer; }
+    .ig-comments { display: grid; gap: 6px; margin: 6px 14px 0; }
+    .ig-comment { margin: 0; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+    .ig-comment strong { margin-right: 5px; font-weight: 600; }
+    .ig-comment-form { display: flex; align-items: center; gap: 8px; margin: 10px 14px 0; padding: 8px 0 0; border-top: 0; }
+    .ig-comment-form input { flex: 1; padding: 6px 0; border: 0; background: transparent; font-size: 14px; }
+    .ig-comment-form input:focus { border-color: transparent; outline: none; box-shadow: none; }
+    .ig-send { padding: 6px 2px; border: 0; background: none; color: var(--blue); font-size: 14px; font-weight: 600; cursor: pointer; }
+    .post-menu-dialog { width: min(340px, 92vw); padding: 8px; border: 0; border-radius: 14px; background: var(--surface); color: var(--text); }
+    .post-menu-dialog::backdrop { background: rgb(0 0 0 / 55%); }
+    .post-menu-options { display: grid; }
+    .post-menu-option { padding: 14px 10px; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: none; color: var(--text); font-size: 15px; text-align: left; cursor: pointer; }
+    .post-menu-option:hover { filter: none; background: color-mix(in srgb, var(--text) 6%, var(--surface)); }
+    .post-menu-option.danger { color: #ed4956; }
+    .post-menu-cancel { width: 100%; margin-top: 8px; padding: 13px; border: 0; border-radius: 8px; background: color-mix(in srgb, var(--text) 6%, var(--surface)); color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer; }
+    .you-saved-row { display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); }
+    .you-saved-open { flex: 1; min-width: 0; padding: 13px 2px; border: 0; border-radius: 0; background: none; color: var(--text); font-size: 14px; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+    .you-saved-remove { width: 36px; height: 36px; flex: 0 0 36px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); font-size: 15px; cursor: pointer; }
+    .you-saved-empty { color: var(--muted); font-size: 14px; }
+    #profile .owner-about { margin: 4px 14px 22px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); font-size: 14px; }
+    #profile .owner-about h2 { margin: 0 0 6px; font-size: 16px; }
+    .status-audience { display: flex; align-items: center; gap: 6px; margin: 2px 0 10px; color: var(--muted); font-size: 13px; font-weight: 500; }
+    .status-audience svg { flex: 0 0 auto; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .updates-divider { height: 1px; margin: 14px 0; background: var(--border); }
+    .post-composer { padding: 0; overflow: hidden; }
+    .post-composer > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 54px; padding: 14px 16px; color: var(--text); font-weight: 750; cursor: pointer; }
+    .post-composer > summary::marker { color: var(--blue); }
+    .post-composer-hint { color: var(--muted); font-size: 12px; font-weight: 500; text-align: right; }
+    .post-composer-content { padding: 0 16px 16px; }
+    .post-composer[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+    .post-audience-note { margin: 4px 0 12px; color: var(--muted); font-size: 13px; }
+    .explore-pill { padding: 7px 16px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--text) 8%, var(--surface)); color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; }
+    .explore-pill:hover { background: color-mix(in srgb, var(--blue) 16%, var(--surface)); }
+    .channels-list { display: grid; }
+    .channel-row { display: grid; grid-template-columns: 46px 1fr auto; gap: 12px; align-items: center; width: 100%; padding: 9px 2px; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); text-align: left; text-decoration: none; cursor: pointer; }
+    .channel-row:hover { background: color-mix(in srgb, var(--blue) 6%, var(--surface)); }
+    .channel-avatar { display: grid; width: 46px; height: 46px; place-items: center; overflow: hidden; border-radius: 50%; background: color-mix(in srgb, var(--blue) 18%, var(--surface)); color: var(--text); font-size: 17px; font-weight: 700; }
+    .channel-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .channel-body { min-width: 0; }
+    .channel-name { display: block; overflow: hidden; font-size: 15px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    .channel-preview { display: block; overflow: hidden; color: var(--muted); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .channel-meta { display: grid; gap: 5px; justify-items: end; }
+    .channel-time { font-size: 12px; font-weight: 600; color: var(--blue); }
+    .channel-time.read { color: var(--muted); font-weight: 400; }
+    .channel-unread { min-width: 20px; padding: 1px 5px; border-radius: 999px; background: #6254d9; color: #fff; font-size: 11px; font-weight: 700; text-align: center; }
+    .channels-empty { padding: 12px 2px; color: var(--muted); font-size: 14px; }
+    .story-form-dialog { width: min(460px, 94vw); padding: 20px; border: 0; border-radius: 16px; background: var(--surface); color: var(--text); }
+    .story-form-dialog::backdrop { background: rgb(0 0 0 / 65%); }
+    .story-form-dialog h3 { margin: 0 0 12px; font-size: 19px; }
+    .story-form-dialog form { margin: 0; }
+    .story-form-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .bottom-nav { background: color-mix(in srgb, var(--surface) 62%, transparent); -webkit-backdrop-filter: blur(22px) saturate(1.8); backdrop-filter: blur(22px) saturate(1.8); }
+    .bottom-nav a { transition: background-color .16s ease, color .16s ease, transform .16s ease; }
+    .bottom-nav a.active { background: color-mix(in srgb, var(--blue) 12%, var(--surface)); }
+    #profileForm .contact-sharing-option { display: flex; align-items: center; gap: 8px; }
+    #profileForm .contact-sharing-option input { width: auto; margin: 0; }
+    #profileForm .invite-link-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: .85rem; }
+    #profileForm .invite-link { flex: 1 1 220px; overflow-wrap: anywhere; color: var(--muted); }
+    .membership-banner { margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; border: 1px solid var(--border); background: color-mix(in srgb, var(--blue) 8%, var(--surface)); }
+    .membership-banner.warning { background: color-mix(in srgb, #f5a623 14%, var(--surface)); }
+    .role-line { font-size: 14px; color: var(--muted); }
+    .role-line strong { color: inherit; }
+    .class-level-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .class-level-row > div { flex: 1; min-width: 120px; }
+    .role-badge { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; border: 1px solid var(--border); background: color-mix(in srgb, var(--blue) 12%, var(--surface)); vertical-align: middle; }
+    .role-badge.security { background: color-mix(in srgb, #d93025 14%, var(--surface)); }
+    .pending-member-list { display: grid; gap: 10px; }
+    .pending-member { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; }
+    .pending-member .pending-meta { flex: 1 1 200px; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+    .admin-lookup-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .admin-lookup-row label { flex: 0 0 auto; }
+    .admin-lookup-row input { flex: 1 1 160px; margin: 0; }
+    .admin-member-result { margin-top: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .admin-member-result select { flex: 0 0 auto; }
+
+    @media (max-width: 480px) {
+      body { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
+      header {
+        padding: 12px;
+      }
+
+      header h1 {
+        font-size: 19px;
+      }
+      header > div { gap: 5px !important; }
+      header > div > a, header > div > button { padding: 8px 9px !important; font-size: 12px; }
+
+      .container {
+        width: 96%;
+      }
+
+      .card {
+        padding: 13px;
+      }
+
+      #authSection { margin: 18px auto; }
+    }
+    /* ============ PROFILE ("YOU") TAB — mobile first ============ */
+    /* :has() is Chrome 105. On a WebView older than that the rule is simply
+       never true and every section shows at once, so the page also puts the same
+       class on #appSection itself, where a plain child selector reaches it. */
+    #appSection:has(#profile:target) > section:not(#profile):not(#adminPanel),
+    #appSection.profile-open > section:not(#profile):not(#adminPanel) {
+      display: none;
+    }
+
+    .you-tab {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .you-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 4px 2px 12px;
+    }
+
+    .you-round {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--blue);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color .16s ease;
+    }
+
+    .you-round svg {
+      width: 21px;
+      height: 21px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .you-pill {
+      display: inline-flex;
+      gap: 2px;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+    }
+
+    .you-pill .you-round { background: transparent; }
+
+    .you-round:hover,
+    .you-pill .you-round:hover { background: color-mix(in srgb, var(--blue) 12%, var(--surface)); }
+
+    .you-hero {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      padding: 4px 0 16px;
+    }
+
+    .you-status-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 92%;
+      min-height: 40px;
+      padding: 8px 15px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color .16s ease, color .16s ease;
+    }
+
+    .you-status-bubble svg {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+    }
+
+    .you-status-bubble.has-status { color: var(--text); }
+
+    .you-status-text {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .you-avatar-wrap { position: relative; margin-top: 6px; }
+
+    .you-avatar {
+      display: grid;
+      place-items: center;
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--blue);
+      color: #fff;
+      font-size: 44px;
+      font-weight: 700;
+    }
+
+    .you-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .you-avatar svg {
+      width: 58px;
+      height: 58px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+    }
+
+    .you-avatar-plus {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--background);
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .you-name-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      min-height: 44px;
+      padding: 8px 14px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-size: 21px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .you-name-row:hover { background: var(--surface); }
+
+    .you-name-row > svg {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      transition: transform .18s ease;
+    }
+
+    .you-name-row[aria-expanded="true"] > svg { transform: rotate(180deg); }
+
+    .you-details {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    #profileDetails { display: block; }
+
+    #profileDetails .profile-avatar { display: none; }
+
+    .you-setup {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      margin: 0 0 16px;
+      padding: 16px 44px 16px 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+    }
+
+    .you-setup-close {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--muted);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .you-setup ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+    .you-setup li { cursor: pointer; }
+    .you-setup li:hover { color: var(--blue); }
+
+    .you-group {
+      margin: 0 0 14px;
+      padding: 2px 0;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .you-group h3 {
+      margin: 0;
+      padding: 12px 16px 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .you-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      min-height: 56px;
+      padding: 10px 16px;
+      border: 0;
+      border-top: 1px solid var(--border);
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-size: 16px;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color .16s ease;
+    }
+
+    .you-group h3 + .you-row { border-top: 0; }
+
+    .you-row:hover { background: color-mix(in srgb, var(--blue) 8%, var(--surface)); }
+
+    .you-row-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--blue) 14%, var(--surface));
+      color: var(--blue);
+    }
+
+    .you-row-icon svg {
+      width: 19px;
+      height: 19px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .you-row-label {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .you-row-value { flex: 0 0 auto; color: var(--muted); font-size: 13px; }
+
+    .you-row-chevron {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      color: var(--muted);
+    }
+
+    .you-row.danger { color: #e5484d; }
+
+    .you-row.danger .you-row-icon { background: color-mix(in srgb, #e5484d 14%, var(--surface)); color: #e5484d; }
+
+    .you-sheet,
+    .you-editor {
+      display: grid;
+      gap: 12px;
+      margin: 0 0 14px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+    }
+
+    .you-sheet h3 { margin: 0; }
+
+    .you-fieldset {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .you-fieldset legend { padding: 0 0 4px; font-size: 15px; font-weight: 700; }
+
+    .you-fieldset + .you-fieldset { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+
+    .you-qr { display: grid; place-items: center; gap: 10px; }
+
+    .you-qr canvas { padding: 6px; border-radius: 12px; background: #fff; max-width: 100%; height: auto; }
+
+    .you-inline-link { color: var(--blue); font-size: 14px; }
+
+    .you-theme-options { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .you-theme-options button {
+      min-height: 44px;
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .you-theme-options button[aria-pressed="true"] {
+      border-color: var(--blue);
+      background: color-mix(in srgb, var(--blue) 14%, var(--surface));
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    /* ============ FLOATING BOTTOM NAV ============ */
+    .bottom-nav a {
+      position: relative;
+      padding: 6px 4px;
+      transition: background-color .16s ease, color .16s ease;
+    }
+
+    .bottom-nav a.active { background: color-mix(in srgb, var(--blue) 12%, var(--surface)); }
+
+    .bottom-nav-photo {
+      display: grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--blue);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bottom-nav-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .bottom-nav-photo svg { width: 16px; height: 16px; }
+
+    .bottom-nav-badge {
+      position: absolute;
+      top: 2px;
+      right: 14%;
+      min-width: 18px;
+      padding: 1px 5px;
+      border-radius: 999px;
+      background: #6254d9;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .mpesa-label {
+      margin: 18px 0 2px;
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .mpesa-number {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      color: var(--blue);
+    }
+
+    .mpesa-steps { margin: 14px 0; padding-left: 22px; line-height: 1.6; }
+
+    .mpesa-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .mpesa-links a {
+      padding: 7px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .fees-sub {
+      margin: 22px 0 10px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .fees-field { display: grid; gap: 4px; margin: 0 0 12px; }
+
+    .fees-field label { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+    .fees-field input { width: 100%; }
+
+    .fees-copy {
+      justify-self: start;
+      margin-top: 2px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .fees-copy:hover { background: color-mix(in srgb, var(--blue) 10%, transparent); }
+
+    .fees-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 6px; }
+
+    @media (min-width: 720px) {
+      .you-avatar { width: 148px; height: 148px; }
+      .you-group,
+      .you-sheet,
+      .you-editor,
+      .you-setup,
+      .you-details { margin-left: auto; margin-right: auto; max-width: 620px; }
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/main-OrmSdL63.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-BWkgFFPF.js">
+  <link rel="modulepreload" crossorigin href="/assets/offline-banner-MfcCChk8.js">
+  <link rel="modulepreload" crossorigin href="/assets/profile-identity-Dr8T9JaE.js">
+  <link rel="modulepreload" crossorigin href="/assets/chat-organize-BW0RJTxO.js">
+  <link rel="modulepreload" crossorigin href="/assets/offline-store-DtZovh2O.js">
+  <link rel="modulepreload" crossorigin href="/assets/company-directory-Ce0IRj1n.js">
+  <link rel="modulepreload" crossorigin href="/assets/staff-verification-CwdSTe46.js">
+  <link rel="stylesheet" crossorigin href="/assets/offline-banner-BFBmpa7B.css">
+</head>
+
+<body>
+  <header>
+    <div class="brand-stack">
+      <h1>campus connect</h1>
+    </div>
+    <div class="header-actions">
+      <a class="world-posts-link" href="/world.html" data-i18n="World posts">World posts</a>
+      <details class="settings-menu">
+        <summary data-i18n="⚙ Settings">⚙ Settings</summary>
+        <div class="settings-panel">
+          <label for="language-selector" hidden data-i18n="Language">Language</label>
+          <select id="language-selector" class="language-selector" aria-label="Language" data-i18n-aria-label="Language">
+            <option value="auto" data-i18n="Auto (my phone)">Auto (my phone)</option>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="sw">Kiswahili</option>
+            <option value="es">Español</option>
+            <option value="ki">Gĩkũyũ</option>
+            <option value="luo">Dholuo</option>
+            <option value="kln">Kalenjin</option>
+            <option value="luy">Luhya</option>
+            <option value="ar">العربية</option>
+            <option value="ha">Hausa</option>
+            <option value="yo">Yorùbá</option>
+            <option value="zu">isiZulu</option>
+            <option value="am">አማርኛ</option>
+            <option value="zh">中文</option>
+            <option value="hi">हिन्दी</option>
+            <option value="pt">Português</option>
+            <option value="ru">Русский</option>
+          </select>
+          <button id="install-app-button" class="secondary" type="button" data-install-app data-i18n="Install app">Install app</button>
+          <button id="biometric-lock-toggle" class="secondary" type="button" hidden>Turn on biometric app lock</button>
+          <small>Biometric lock is a device convenience and cannot prevent viruses or protect a compromised device.</small>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- AUTHENTICATION -->
+    <!-- Signing in is an option on this page, not a wall: the form stays folded
+         until somebody asks for it, and once he is in it does not come back. -->
+    <div id="authEntry" class="auth-entry">
+      <button id="authEntryLogin" type="button" data-i18n="Log in">Log in</button>
+      <button id="authEntryRegister" class="secondary" type="button" data-i18n="Register">Register</button>
+    </div>
+    <section id="authSection" class="card hidden">
+      <button id="authCloseButton" class="auth-close" type="button" aria-label="Close" data-i18n-aria-label="Close">×</button>
+      <h2 data-i18n="Welcome to Campus Connect 🎓">Welcome to Campus Connect 🎓</h2>
+      <p class="muted" data-i18n="Connect with people, wherever they study or work.">Connect with people, wherever they study or work.</p>
+
+      <div class="tabs">
+        <button id="showLoginButton" type="button" data-i18n="Log in">Log in</button>
+        <button id="showRegisterButton" class="secondary" type="button" data-i18n="Register">
+          Register
+        </button>
+      </div>
+
+      <form id="loginForm">
+        <h3 data-i18n="Log in to your account">Log in to your account</h3>
+
+        <label for="loginMethod" data-i18n="Sign-in method">Sign-in method</label>
+        <select id="loginMethod">
+          <option value="email-password" data-i18n="Email and password">Email and password</option>
+          <option value="email-link" data-i18n="Email sign-in link">Email sign-in link</option>
+          <option value="phone" data-i18n="Phone number and password">Phone number and password</option>
+          <option value="registration-number" data-i18n="Registration number and password">Registration number and password</option>
+          <option value="phone-device" data-i18n="Use phone saved on this device">Use phone saved on this device</option>
+        </select>
+
+        <div id="emailLoginFields">
+          <label for="loginEmail" data-i18n="Email">Email</label>
+          <input id="loginEmail" type="email" autocomplete="email" required>
+        </div>
+        <div id="registrationLoginFields" class="hidden">
+          <label for="loginRegistrationNumber" data-i18n="Student registration number">Student registration number</label>
+          <input id="loginRegistrationNumber" type="text" maxlength="32" spellcheck="false" autocomplete="off">
+        </div>
+        <div id="passwordLoginFields">
+          <label for="loginPassword" data-i18n="Password">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required>
+        </div>
+        <div id="phoneLoginFields" class="hidden">
+          <label for="loginPhoneCountryCode" data-i18n="Country calling code">Country calling code</label>
+          <div class="phone-input-row">
+            <input id="loginPhoneCountryCode" type="tel" autocomplete="tel-country-code" inputmode="tel"
+                   value="+254" maxlength="4" pattern="\+[1-9]\d{0,2}" aria-label="Country calling code" data-i18n-aria-label="Country calling code">
+            <input id="loginPhoneNumber" type="tel" autocomplete="tel-national" inputmode="numeric"
+                   placeholder="712345678" maxlength="14" pattern="[0-9]{4,14}" aria-label="Phone number" data-i18n-aria-label="Phone number">
+          </div>
+          <p class="muted" data-i18n="Enter your phone number without its country code.">Enter your phone number without its country code.</p>
+        </div>
+
+        <button id="loginSubmitButton" type="submit" data-i18n="Log in">Log in</button>
+        <p id="loginStatus" class="status" role="status"></p>
+        <p class="auth-help hidden" id="resendEmailLogin">
+          <button id="resendEmailLoginLink" type="button" data-i18n="Resend sign-in link">Resend sign-in link</button>
+        </p>
+        <p class="auth-help">
+          <button id="forgotPasswordButton" type="button" data-i18n="Forgot your password?">Forgot your password?</button>
+        </p>
+        <p class="auth-help hidden" id="resendConfirmation">
+          <button id="resendConfirmationButton" type="button" data-i18n="Resend confirmation email">Resend confirmation email</button>
+        </p>
+      </form>
+      <form id="registerForm" class="hidden">
+        <h3 data-i18n="Create your account">Create your account</h3>
+        <label for="registerMethod" data-i18n="Registration method">Registration method</label>
+        <select id="registerMethod">
+          <option value="email" data-i18n="Email and password">Email and password</option>
+          <option value="phone" data-i18n="Phone number">Phone number</option>
+        </select>
+
+        <label for="registerName" data-i18n="Full name">Full name</label>
+        <input id="registerName" type="text" maxlength="80"
+               autocomplete="name" required>
+
+        <label for="registerUsername" data-i18n="Username">Username</label>
+        <input id="registerUsername" type="text" minlength="3" maxlength="30"
+               pattern="[A-Za-z0-9_]{3,30}"
+               title="Use 3 to 30 letters, numbers and underscores."
+               required>
+
+        <div id="emailRegistrationFields">
+          <label for="registerEmail" data-i18n="Email">Email</label>
+          <input id="registerEmail" type="email" autocomplete="email" required>
+          <p class="muted" data-i18n="Any valid email address from any country is welcome; no school email is required.">Any valid email address from any country is welcome; no school email is required.</p>
+        </div>
+        <div id="phoneRegistrationFields" class="hidden">
+          <label for="registerPhoneCountryCode" data-i18n="Country calling code">Country calling code</label>
+          <div class="phone-input-row">
+            <input id="registerPhoneCountryCode" type="tel" autocomplete="tel-country-code" inputmode="tel"
+                   value="+254" maxlength="4" pattern="\+[1-9]\d{0,2}" aria-label="Country calling code" data-i18n-aria-label="Country calling code">
+            <input id="registerPhoneNumber" type="tel" autocomplete="tel-national" inputmode="numeric"
+                   placeholder="712345678" maxlength="14" pattern="[0-9]{4,14}" aria-label="Phone number" data-i18n-aria-label="Phone number">
+          </div>
+          <p class="muted" data-i18n="Enter your phone number without its country code.">Enter your phone number without its country code.</p>
+        </div>
+
+        <label for="registerCourse" data-i18n="University, school, course, or organization (optional)">University, school, course, or organization (optional)</label>
+        <input id="registerCourse" type="text" maxlength="100">
+
+        <div id="registerCampusFields">
+          <label for="registerUniversity" data-i18n="Your university or college">Your university or college</label>
+          <input id="registerUniversity" type="text" maxlength="100" list="universityOptions"
+                 autocomplete="organization" placeholder="Kabarak University" required>
+          <datalist id="universityOptions"></datalist>
+          <p class="muted" data-i18n="Your university is required: it is the key to your own school's notices, classes and people. Other schools stay readable underneath.">Your university is required: it is the key to your own school's notices, classes and people. Other schools stay readable underneath.</p>
+        </div>
+
+        <div id="registerCompanyFields" hidden>
+          <label for="registerCompany" data-i18n="Your company">Your company</label>
+          <input id="registerCompany" type="text" maxlength="120" autocomplete="organization"
+                 placeholder="Company name" data-i18n-placeholder="Company name" required>
+          <label for="registerCompanyRole" data-i18n="Your role there">Your role there</label>
+          <select id="registerCompanyRole">
+            <option value="director" data-i18n="Director or owner">Director or owner</option>
+            <option value="staff" data-i18n="Staff">Staff</option>
+          </select>
+          <p class="muted" data-i18n="Write the name as it appears on its letterhead. Once you are signed in, the companies page can match it to the list or add it there.">Write the name as it appears on its letterhead. Once you are signed in, the companies page can match it to the list or add it there.</p>
+          <p class="muted" data-i18n="A company signs in with an email address. It gets its own zone in the feed and may write announcements about its company, but it does not get classes.">A company signs in with an email address. It gets its own zone in the feed and may write announcements about its company, but it does not get classes.</p>
+        </div>
+
+        <label for="registerRole" data-i18n="I am a">I am a</label>
+        <select id="registerRole">
+          <option value="student" data-i18n="Student">Student</option>
+          <option value="lecturer" data-i18n="Lecturer">Lecturer</option>
+          <option value="security" data-i18n="Security staff">Security staff</option>
+          <option value="company" data-i18n="A company: its director or staff">A company: its director or staff</option>
+          <option value="member" data-i18n="Parent, relative or friend of a student">Parent, relative or friend of a student</option>
+          <option value="community" data-i18n="Community member (no campus ID)">Community member (no campus ID)</option>
+        </select>
+        <p class="muted" id="registerRoleHint" data-i18n="Students start immediately. A lecturer has to show a National ID, a staff ID card and the letter of introduction, and an admin has to accept them before the university system opens.">Students start immediately. A lecturer has to show a National ID, a staff ID card and the letter of introduction, and an admin has to accept them before the university system opens.</p>
+        <p class="muted" id="registerMemberNote" hidden data-i18n="An account outside the university signs in with an email address and reads the bulletin: what is happening in the world, at the university and with the people in it. It does not get chats, posts, statuses or classes, and no student can message it.">An account outside the university signs in with an email address and reads the bulletin: what is happening in the world, at the university and with the people in it. It does not get chats, posts, statuses or classes, and no student can message it.</p>
+        <p class="muted" id="registerCommunityNote" hidden data-i18n="A community account uses a phone number and password: no registration number, no staff ID, no university to name. Chats, posts and statuses are all yours. Classes and campus services stay closed because they belong to the university.">A community account uses a phone number and password: no registration number, no staff ID, no university to name. Chats, posts and statuses are all yours. Classes and campus services stay closed because they belong to the university.</p>
+
+        <div id="registerNumberFields">
+          <label for="registerNumber" id="registerNumberLabel" data-i18n="Your registration number">Your registration number</label>
+          <input id="registerNumber" type="text" maxlength="32" spellcheck="false" autocomplete="off"
+                 placeholder="KU01-1234-2024" required>
+          <p class="muted" id="registerNumberHint" data-i18n="One number, one account. The system keeps it for you, and a number that is already known is refused even when two people share a name.">One number, one account. The system keeps it for you, and a number that is already known is refused even when two people share a name.</p>
+        </div>
+
+        <div id="registerStudyModeFields">
+          <label for="registerStudyMode" data-i18n="How you study">How you study</label>
+          <select id="registerStudyMode">
+            <option value="normal" data-i18n="Normal studies">Normal studies</option>
+            <option value="retake" data-i18n="Retake / supplementary">Retake / supplementary</option>
+            <option value="online" data-i18n="Online studies">Online studies</option>
+          </select>
+          <p class="muted" data-i18n="This is the badge people see on your profile: Normal, Retake or Online. You can change it later.">This is the badge people see on your profile: Normal, Retake or Online. You can change it later.</p>
+        </div>
+
+        <label for="registerGender" data-i18n="Gender (optional)">Gender (optional)</label>
+        <select id="registerGender">
+          <option value="" data-i18n="Prefer not to say">Prefer not to say</option>
+          <option value="male" data-i18n="Male">Male</option>
+          <option value="female" data-i18n="Female">Female</option>
+          <option value="other" data-i18n="Other genders">Other genders</option>
+        </select>
+        <p class="muted" data-i18n="Your gender is shown to signed-in members only when your profile is discoverable.">Your gender is shown to signed-in members only when your profile is discoverable.</p>
+
+        <div id="registrationPasswordField">
+          <label for="registerPassword" data-i18n="Password (at least 6 characters)">Password (at least 6 characters)</label>
+          <input id="registerPassword" type="password" minlength="6" autocomplete="new-password" required>
+          <p class="muted" data-i18n="Use at least 6 characters. You will use this password with your phone number or email.">Use at least 6 characters. You will use this password with your phone number or email.</p>
+        </div>
+
+        <button type="submit" data-i18n="Create account">Create account</button>
+        <p id="registerStatus" class="status" role="status"></p>
+      </form>
+    </section>
+
+    <!-- APPLICATION -->
+    <section id="appSection" class="hidden">
+      <section id="profile" class="card you-tab" aria-labelledby="more-title">
+        <header class="you-topbar">
+          <a class="you-round" href="/messages.html" aria-label="Find people" data-i18n-aria-label="Find people" title="Find people" data-i18n-title="Find people">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+          </a>
+          <h2 id="more-title" data-i18n="More">More</h2>
+          <div class="you-pill">
+            <button id="youQrButton" class="you-round" type="button" aria-label="My QR code" data-i18n-aria-label="My QR code" title="My QR code" data-i18n-title="My QR code">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path d="M8.5 8.5h2v2h-2zM13.5 8.5h2v2h-2zM8.5 13.5h2v2h-2zM13.5 13.5h2v2h-2z"/></svg>
+            </button>
+            <button id="youEditButton" class="you-round" type="button" aria-label="Edit profile" data-i18n-aria-label="Edit profile" title="Edit profile" data-i18n-title="Edit profile">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L18 10l-4-4L4 16v4Z"/><path d="m14 6 4 4"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="you-hero">
+          <button id="youStatusButton" class="you-status-bubble" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-3.2A7.5 7.5 0 1 1 20 11.5Z"/></svg>
+            <span id="youStatusText" class="you-status-text">Share a thought!</span>
+          </button>
+          <div class="you-avatar-wrap">
+            <div id="youAvatar" class="you-avatar" aria-hidden="true"></div>
+            <button id="youAvatarButton" class="you-avatar-plus" type="button" aria-label="Change profile picture" data-i18n-aria-label="Change profile picture">+</button>
+          </div>
+          <button id="youNameRow" class="you-name-row" type="button" aria-expanded="false" aria-controls="youDetails">
+            <span id="youName">…</span>
+            <span id="youRoleSlot"></span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+
+        <div id="youDetails" class="you-details hidden">
+          <div id="profileDetails" data-i18n="Loading your profile...">Loading your profile...</div>
+        </div>
+
+        <div id="youSetupCard" class="you-setup hidden">
+          <button id="youSetupClose" class="you-setup-close" type="button" aria-label="Dismiss" data-i18n-aria-label="Dismiss">×</button>
+          <strong id="youSetupTitle" data-i18n="Complete your profile">Complete your profile</strong>
+          <ul id="youSetupList"></ul>
+          <button id="youSetupAction" class="secondary" type="button" data-i18n="Add it now">Add it now</button>
+        </div>
+
+        <p id="membershipStatus" class="membership-banner" role="status" hidden></p>
+
+        <div class="you-group campus-only">
+          <h3 data-i18n="Chats and groups">Chats and groups</h3>
+          <a class="you-row" href="/messages.html">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 13.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M17 5.5a4 4 0 0 1 0 7.6M18.5 20a6 6 0 0 0-2-4.4"/></svg></span>
+            <span class="you-row-label" data-i18n="Lists and groups">Lists and groups</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </a>
+          <a class="you-row" href="/messages.html?filter=favorites">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 2.4 5 5.6.7-4 4 .9 5.6-4.9-2.7-4.9 2.7.9-5.6-4-4L9.6 9Z"/></svg></span>
+            <span class="you-row-label" data-i18n="Starred messages">Starred messages</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </a>
+          <a class="you-row" href="/classes.html">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h8a3 3 0 0 1 3 3v11a3 3 0 0 0-3-3H3Z"/><path d="M21 5h-8a3 3 0 0 0-3 3v11a3 3 0 0 1 3-3h8Z"/></svg></span>
+            <span class="you-row-label" data-i18n="Campus classes and timetable">Campus classes and timetable</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </a>
+          <a class="you-row" id="foundNotice" href="/services.html#found-section" hidden>
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/><path d="M11 8.5v5M8.5 11h5"/></svg></span>
+            <span class="you-row-label" id="foundNoticeText">Something of yours was found</span>
+            <span class="you-row-value" id="foundNoticeNote"></span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </a>
+          <a class="you-row" href="/services.html">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg></span>
+            <span class="you-row-label" data-i18n="Hostels, catering and chaplaincy">Hostels, catering and chaplaincy</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </a>
+        </div>
+
+        <div class="you-group campus-only">
+          <h3 data-i18n="University systems">University systems</h3>
+          <a class="you-row" href="/companies.html">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16"/><path d="M15 10h3a2 2 0 0 1 2 2v9"/><path d="M8 7h4M8 11h4M8 15h4M3 21h18"/></svg></span>
+            <span class="you-row-label" data-i18n="Companies of the world">Companies of the world</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </a>
+          <button class="you-row" type="button" data-you-target="fees">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/></svg></span>
+            <span class="you-row-label" data-i18n="Pay school fees">Pay school fees</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+        </div>
+
+        <div class="you-group campus-only">
+          <h3 data-i18n="Account">Account</h3>
+          <button class="you-row" type="button" data-you-target="account">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg></span>
+            <span class="you-row-label" data-i18n="Account">Account</span>
+            <span class="you-row-value" id="youAccountValue"></span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+          <button class="you-row" type="button" data-you-target="privacy">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.4-7 9-4.1-1.6-7-4.8-7-9V6l7-2.5Z"/></svg></span>
+            <span class="you-row-label" data-i18n="Privacy">Privacy</span>
+            <span class="you-row-value" id="youPrivacyValue"></span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+          <button class="you-row" type="button" data-you-target="appearance">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17"/></svg></span>
+            <span class="you-row-label" data-i18n="Appearance">Appearance</span>
+            <span class="you-row-value" id="youThemeValue"></span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+          <button id="youChatsRow" class="you-row" type="button" data-you-target="chats">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-3.2A7.5 7.5 0 1 1 20 11.5Z"/></svg></span>
+            <span class="you-row-label" data-i18n="Chats">Chats</span>
+            <span class="you-row-value" id="youChatsValue"></span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+        </div>
+
+        <div class="you-group">
+          <h3 data-i18n="Help">Help</h3>
+          <button class="you-row" type="button" data-you-target="invite">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-9.2A4.8 4.8 0 0 1 12 8a4.8 4.8 0 0 1 7 2.8c0 4.8-7 9.2-7 9.2Z"/></svg></span>
+            <span class="you-row-label" data-i18n="Invite a friend">Invite a friend</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+          <button class="you-row" type="button" data-you-target="saved">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11v17l-5.5-3.9-5.5 3.9Z"/></svg></span>
+            <span class="you-row-label" data-i18n="Saved posts">Saved posts</span>
+            <span class="you-row-value" id="youSavedCount"></span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+          <button id="logoutButton" class="you-row danger hidden" type="button">
+            <span class="you-row-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 4.5H6v15h9"/><path d="M12 12h9m0 0-3-3m3 3-3 3"/></svg></span>
+            <span class="you-row-label" data-i18n="Log out">Log out</span>
+          </button>
+        </div>
+
+        <div class="you-group">
+          <h3 data-i18n="Support">Support</h3>
+          <button class="you-row" type="button" data-you-target="mpesa">
+            <span class="you-row-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+            <span class="you-row-label" data-i18n="Send a M-Pesa gift to the developer">Send a M-Pesa gift to the developer</span>
+            <svg class="you-row-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+        </div>
+
+        <section id="you-about" class="card owner-about">
+          <h2 data-i18n="About Campus Connect">About Campus Connect</h2>
+          <p data-i18n="Share updates, find people, chat and call on campus.">Share updates, find people, chat and call on campus.</p>
+          <p class="app-owner-name">Developed by Josh Chimal Akim · BSc Computer Science, Kabarak University</p>
+          <p class="muted" id="appVersionLine">Campus Connect v1.47</p>
+          <p class="muted" id="storageLine">Campus Connect keeps its media on this phone.</p>
+          <p class="muted"><small id="storageNote"></small></p>
+          <button type="button" class="secondary" id="clearSavedMedia" hidden data-i18n="Clear saved media">Clear saved media</button>
+        </section>
+
+        <div id="youAppearanceSheet" class="you-sheet hidden">
+          <h3 data-i18n="Appearance">Appearance</h3>
+          <div class="you-theme-options" role="group" aria-label="Appearance" data-i18n-aria-label="Appearance">
+            <button type="button" data-theme-mode="light" data-i18n="Light">Light</button>
+            <button type="button" data-theme-mode="dark" data-i18n="Dark">Dark</button>
+            <button type="button" data-theme-mode="system" data-i18n="Follow system">Follow system</button>
+          </div>
+        </div>
+
+        <div id="youInviteSheet" class="you-sheet hidden">
+          <h3 data-i18n="Invite someone to chat">Invite someone to chat</h3>
+          <div class="you-qr" id="youInviteQr"></div>
+          <p class="invite-link-row">
+            <span data-i18n="Your invite link">Your invite link</span>:
+            <output id="myInviteLink" class="invite-link"></output>
+          </p>
+          <button id="copyMyInviteLink" class="secondary" type="button" data-i18n="Copy invite link">Copy invite link</button>
+          <button id="shareMyInviteButton" class="secondary" type="button" data-i18n="Share invite link">Share invite link</button>
+          <small data-i18n="Anyone with this link can open a chat with you.">Anyone with this link can open a chat with you.</small>
+        </div>
+
+        <div id="youSavedSheet" class="you-sheet hidden">
+          <h3 data-i18n="Saved posts">Saved posts</h3>
+          <div id="youSavedList"></div>
+          <p id="youSavedEmpty" class="you-saved-empty" data-i18n="Tap the bookmark on a post to keep it here.">Tap the bookmark on a post to keep it here.</p>
+          <button id="youSavedClose" class="secondary" type="button" data-i18n="Close">Close</button>
+        </div>
+
+        <form id="profileForm" class="you-editor hidden">
+          <fieldset id="youAccountFields" class="you-fieldset">
+            <legend data-i18n="Account">Account</legend>
+            <label for="profileAvatarFile" data-i18n="Profile picture">Profile picture</label>
+            <img id="profileAvatarPreview" alt="Profile picture preview" hidden>
+            <input id="profileAvatarFile" type="file" accept="image/*">
+            <label for="profileName" data-i18n="Display name">Display name</label>
+            <input id="profileName" type="text" maxlength="100" required>
+            <label for="profileUsername" data-i18n="Username">Username</label>
+            <input id="profileUsername" type="text" maxlength="30" minlength="3" autocomplete="username" spellcheck="false" pattern="[a-z0-9_]{3,30}" data-i18n-placeholder="your_name">
+            <p id="usernameStatus" class="status" role="status"></p>
+            <small data-i18n="Other members find you by this username. It is shown instead of your display name in search and chats.">Other members find you by this username. It is shown instead of your display name in search and chats.</small>
+            <label for="profileBio" data-i18n="About you">About you</label>
+            <textarea id="profileBio" maxlength="500" placeholder="A little about you..." data-i18n-placeholder="A little about you..."></textarea>
+            <label for="profileCourse" data-i18n="University, school, course, or organization">University, school, course, or organization</label>
+            <input id="profileCourse" type="text" maxlength="120">
+            <div id="class-level-fields" hidden>
+              <label for="profileProgramme" data-i18n="My Kabarak programme">My Kabarak programme</label>
+              <select id="profileProgramme">
+                <option value="" data-i18n="Not listed / other">Not listed / other</option>
+              </select>
+              <div class="class-level-row">
+                <div style="flex:1; min-width:120px;">
+                  <label for="profileStudyYear" data-i18n="Year">Year</label>
+                  <select id="profileStudyYear" style="width:100%;">
+                    <option value="" data-i18n="Select year">Select year</option>
+                  </select>
+                </div>
+                <div style="flex:1; min-width:120px;">
+                  <label for="profileSemester" data-i18n="Semester">Semester</label>
+                  <select id="profileSemester" style="width:100%;">
+                    <option value="" data-i18n="Select semester">Select semester</option>
+                    <option value="1" data-i18n="Semester 1">Semester 1</option>
+                    <option value="2" data-i18n="Semester 2">Semester 2</option>
+                  </select>
+                </div>
+              </div>
+              <p id="class-level-preview" class="role-line" role="status"></p>
+              <small data-i18n="Choosing your programme, year and semester classifies your class (for example 2.1). It also fills the course line above.">Choosing your programme, year and semester classifies your class (for example 2.1). It also fills the course line above.</small>
+            </div>
+            <label for="profileStudyMode" data-i18n="How you study">How you study</label>
+            <select id="profileStudyMode">
+              <option value="normal" data-i18n="Normal studies">Normal studies</option>
+              <option value="retake" data-i18n="Retake / supplementary">Retake / supplementary</option>
+              <option value="online" data-i18n="Online studies">Online studies</option>
+            </select>
+            <small data-i18n="People see this on your profile as Normal, Retake or Online. An admin can correct it if it is wrong.">People see this on your profile as Normal, Retake or Online. An admin can correct it if it is wrong.</small>
+            <label for="profileUniversity" data-i18n="University">University</label>
+            <input id="profileUniversity" type="text" maxlength="120" placeholder="Kabarak University" data-i18n-placeholder="Kabarak University">
+            <small data-i18n="This decides which classes and announcements reach you.">This decides which classes and announcements reach you.</small>
+            <label for="profileCompany" data-i18n="Company">Company</label>
+            <input id="profileCompany" type="text" maxlength="120" list="companyOptions" autocomplete="off" placeholder="Where you work" data-i18n-placeholder="Where you work">
+            <datalist id="companyOptions"></datalist>
+            <label for="profileCompanyRole" data-i18n="Your role at that company">Your role at that company</label>
+            <select id="profileCompanyRole">
+              <option value="" data-i18n="Not stated">Not stated</option>
+              <option value="director" data-i18n="Director or owner">Director or owner</option>
+              <option value="staff" data-i18n="Staff">Staff</option>
+            </select>
+            <small data-i18n="People from the same company come first in your feed. A company missing from the list can be added on the companies page.">People from the same company come first in your feed. A company missing from the list can be added on the companies page.</small>
+            <label for="profileRegistration" data-i18n="Registration number (optional)">Registration number (optional)</label>
+            <input id="profileRegistration" type="text" maxlength="32" spellcheck="false" autocomplete="off" pattern="[A-Za-z0-9][-./ A-Za-z0-9]{2,31}">
+            <small id="registrationHint" data-i18n="Only you and an app admin can read this. It lets a found ID be matched back to you, and nobody can browse a list of these numbers.">Only you and an app admin can read this. It lets a found ID be matched back to you, and nobody can browse a list of these numbers.</small>
+            <p id="myRoleLine" class="role-line"></p>
+            <div id="roleRequestFields">
+              <label for="profileRoleRequest" data-i18n="Ask for a role">Ask for a role</label>
+              <select id="profileRoleRequest">
+                <option value="" data-i18n="Keep my current role">Keep my current role</option>
+                <option value="lecturer" data-i18n="Lecturer">Lecturer</option>
+                <option value="security" data-i18n="Security staff">Security staff</option>
+                <option value="chaplain" data-i18n="Chaplain">Chaplain</option>
+              </select>
+              <small data-i18n="An app admin checks your claim before this role is given. While a lecturer claim waits, the university system stays closed to you until you send your documents and an admin accepts them.">An app admin checks your claim before this role is given. While a lecturer claim waits, the university system stays closed to you until you send your documents and an admin accepts them.</small>
+            </div>
+          </fieldset>
+          <fieldset id="youPrivacyFields" class="you-fieldset">
+            <legend data-i18n="Privacy">Privacy</legend>
+            <label for="profileContactEmail" data-i18n="Contact email (optional)">Contact email (optional)</label>
+            <input id="profileContactEmail" type="email" maxlength="254" autocomplete="email">
+            <label class="contact-sharing-option"><input id="shareProfileEmail" type="checkbox"> <span data-i18n="Show my contact email to signed-in students">Show my contact email to signed-in students</span></label>
+            <label for="profileContactPhone" data-i18n="Contact phone (optional)">Contact phone (optional)</label>
+            <input id="profileContactPhone" type="tel" maxlength="32" autocomplete="tel">
+            <label class="contact-sharing-option"><input id="shareProfilePhone" type="checkbox"> <span data-i18n="Show my contact phone to signed-in students">Show my contact phone to signed-in students</span></label>
+            <label class="contact-sharing-option"><input id="discoverProfile" type="checkbox"> <span data-i18n="Show my profile in student search">Show my profile in student search</span></label>
+            <small data-i18n="Your profile is hidden from student search unless you enable this option. Your profile picture remains visible in chats.">Your profile is hidden from student search unless you enable this option. Your profile picture remains visible in chats.</small>
+            <p class="muted" data-i18n="Blocked members">Blocked members</p>
+            <a class="you-inline-link" href="/messages.html" data-i18n="Manage blocked members">Manage blocked members</a>
+          </fieldset>
+          <small>Profile edits can be saved offline on this device and sync automatically when you reconnect.</small>
+          <p id="profileStatus" class="status" role="status"></p>
+          <button id="saveProfileButton" type="submit" data-i18n="Save profile">Save profile</button>
+        </form>
+      </section>
+
+      <section id="adminPanel" class="card hidden">
+        <h2 data-i18n="Member administration">Member administration</h2>
+        <p class="muted" data-i18n="Approve or reject lecturer and security requests, and give a role directly. Every action here is recorded.">Approve or reject lecturer and security requests, and give a role directly. Every action here is recorded.</p>
+        <h3 data-i18n="Requests waiting for review">Requests waiting for review</h3>
+        <div id="pendingMemberList" class="pending-member-list">
+          <p class="muted" data-i18n="Loading...">Loading...</p>
+        </div>
+        <h3 data-i18n="Lecturer documents waiting for review">Lecturer documents waiting for review</h3>
+        <div id="staffSubmissionList" class="pending-member-list">
+          <p class="muted" data-i18n="Loading...">Loading...</p>
+        </div>
+        <h3 data-i18n="Lecturers on the staff list">Lecturers on the staff list</h3>
+        <p class="muted" data-i18n="Archiving a lecturer closes the university system to them. When they come back they must show a new staff ID card, because the old card stays retired.">Archiving a lecturer closes the university system to them. When they come back they must show a new staff ID card, because the old card stays retired.</p>
+        <div id="staffActiveList" class="pending-member-list">
+          <p class="muted" data-i18n="Loading...">Loading...</p>
+        </div>
+        <h3 data-i18n="Former lecturers (passive)">Former lecturers (passive)</h3>
+        <div id="staffPassiveList" class="pending-member-list">
+          <p class="muted" data-i18n="Loading...">Loading...</p>
+        </div>
+        <h3 data-i18n="Change a member's role">Change a member's role</h3>
+        <div class="admin-lookup-row">
+          <label for="adminMemberUsername" data-i18n="Username">Username</label>
+          <input id="adminMemberUsername" type="text" maxlength="30" spellcheck="false" autocomplete="off">
+          <button id="adminLookupButton" type="button" data-i18n="Find member">Find member</button>
+        </div>
+        <div id="adminMemberResult" class="admin-member-result" hidden></div>
+
+        <h3 data-i18n="Paid placements">Paid placements</h3>
+        <p class="muted" data-i18n="A hostel, a print shop or a food vendor pays you directly, outside this app. What you write here is the card that goes to the front of the feed, and it closes itself when the last day is over. Nothing here touches anybody's money.">
+          A hostel, a print shop or a food vendor pays you directly, outside this app. What you write here is the card that goes to the front of the feed, and it closes itself when the last day is over. Nothing here touches anybody's money.
+        </p>
+        <div id="promotionList" class="promotion-list">
+          <p class="muted" data-i18n="Loading...">Loading...</p>
+        </div>
+        <div class="promotion-form">
+          <label for="promotionBusiness" data-i18n="Business">Business</label>
+          <input id="promotionBusiness" type="text" maxlength="80" autocomplete="off" spellcheck="false">
+          <label for="promotionHeadline" data-i18n="Headline">Headline</label>
+          <input id="promotionHeadline" type="text" maxlength="120" autocomplete="off">
+          <label for="promotionBody" data-i18n="What you are offering">What you are offering</label>
+          <textarea id="promotionBody" class="promotion-wide" maxlength="600" rows="3"></textarea>
+          <label for="promotionContact" data-i18n="Phone or WhatsApp">Phone or WhatsApp</label>
+          <input id="promotionContact" type="tel" maxlength="40" autocomplete="off" spellcheck="false">
+          <label for="promotionLink" data-i18n="Website or booking link">Website or booking link</label>
+          <input id="promotionLink" type="text" maxlength="2048" autocomplete="off" spellcheck="false">
+          <label for="promotionSchool" data-i18n="Only this campus (blank shows it everywhere)">Only this campus (blank shows it everywhere)</label>
+          <input id="promotionSchool" type="text" maxlength="120" autocomplete="off">
+          <label for="promotionDays" data-i18n="Days on the feed">Days on the feed</label>
+          <input id="promotionDays" type="number" min="1" max="365" step="1" value="7">
+          <label for="promotionPrice" data-i18n="What was agreed (only you see this)">What was agreed (only you see this)</label>
+          <input id="promotionPrice" type="text" maxlength="200" autocomplete="off">
+          <label for="promotionPicture" data-i18n="Picture (optional)">Picture (optional)</label>
+          <input id="promotionPicture" type="file" accept="image/*">
+        </div>
+        <button id="promotionSaveButton" type="button" data-i18n="Put it on the feed">Put it on the feed</button>
+
+        <p id="adminStatus" class="status" role="status"></p>
+      </section>
+
+      <section id="stories" class="card">
+        <h1 class="updates-title" data-i18n="Updates">Updates</h1>
+
+        <div class="updates-section-head">
+          <h2 data-i18n="Status">Status</h2>
+          <span class="spacer"></span>
+          <button id="refreshStoriesButton" class="updates-icon-button" type="button"
+                  aria-label="Refresh statuses" data-i18n-aria-label="Refresh statuses"
+                  title="Refresh statuses" data-i18n-title="Refresh statuses">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 11a8 8 0 1 0-2.3 6.1M20 5.5V11h-5.5" />
+            </svg>
+          </button>
+          <button id="statusCameraButton" class="updates-icon-button" type="button"
+                  aria-label="Add photo status" data-i18n-aria-label="Add photo status"
+                  title="Add photo status" data-i18n-title="Add photo status">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 8.5h3L9 6h6l2 2.5h3v10.5H4z" />
+              <circle cx="12" cy="13.5" r="3.4" />
+            </svg>
+          </button>
+          <button id="statusTextButton" class="updates-icon-button" type="button"
+                  aria-label="Add text status" data-i18n-aria-label="Add text status"
+                  title="Add text status" data-i18n-title="Add text status">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 20h4L19 9l-4-4L4 16z" />
+              <path d="M14.5 5.5 19 10" />
+            </svg>
+          </button>
+        </div>
+
+        <p class="status-audience">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+            <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+          </svg>
+          <span data-i18n="Only your friends can see your statuses.">Only your friends can see your statuses.</span>
+        </p>
+
+        <p id="storyStatus" class="status" role="status" aria-live="polite"></p>
+        <div id="storiesList" class="stories-list" aria-label="Student statuses"></div>
+
+        <div class="updates-divider"></div>
+
+        <div class="updates-section-head">
+          <h2 data-i18n="Channels">Channels</h2>
+          <span class="spacer"></span>
+          <button id="exploreChannelsButton" class="explore-pill" type="button" data-i18n="Explore">Explore</button>
+        </div>
+        <div id="channelsList" class="channels-list"></div>
+      </section>
+
+      <dialog id="storyFormDialog" class="story-form-dialog" aria-label="Add status"
+              data-i18n-aria-label="Add status">
+        <form id="storyForm">
+          <h3 data-i18n="Your status">Your status</h3>
+          <label for="storyText" data-i18n="Write something">Write something</label>
+          <textarea id="storyText" maxlength="500" placeholder="What are you up to?" data-i18n-placeholder="What are you up to?"></textarea>
+          <label for="storyMedia" data-i18n="Add a photo or video (optional)">Add a photo or video (optional)</label>
+          <input id="storyMedia" type="file" accept="image/*,video/*">
+          <p class="muted">Videos can be up to 10 minutes and 500 MiB. Photos can be up to 50 MiB.</p>
+          <div class="story-form-actions">
+            <button id="storyFormCancel" class="secondary" type="button" data-i18n="Cancel">Cancel</button>
+            <button id="publishStoryButton" type="submit" data-i18n="Share status">Share status</button>
+          </div>
+        </form>
+      </dialog>
+
+      <section id="bulletin" class="card">
+        <h2 data-i18n="Bulletin">Bulletin</h2>
+        <p class="muted" data-i18n="News about the university, the people and the world. Everyone can share, with a photo or video. Announcements disappear after 24 hours.">News about the university, the people and the world. Everyone can share, with a photo or video. Announcements disappear after 24 hours.</p>
+        <div id="bulletinBody" class="bulletin-body"></div>
+        <div id="bulletinWrite" class="bulletin-write hidden">
+          <h3 data-i18n="Write an announcement">Write an announcement</h3>
+          <label for="bulletinSection" data-i18n="Which column?">Which column?</label>
+          <select id="bulletinSection">
+            <option value="university" data-i18n="University news">University news</option>
+            <option value="world" data-i18n="World news">World news</option>
+            <option value="people" data-i18n="People news">People news</option>
+            <option value="company" data-i18n="Company news">Company news</option>
+          </select>
+          <label for="bulletinTitle" data-i18n="Headline">Headline</label>
+          <input id="bulletinTitle" type="text" maxlength="120" autocomplete="off">
+          <label for="bulletinBodyInput" data-i18n="What happened?">What happened?</label>
+          <textarea id="bulletinBodyInput" maxlength="4000"></textarea>
+          <label for="bulletinMedia" data-i18n="Add a photo or video (optional)">Add a photo or video (optional)</label>
+          <input id="bulletinMedia" type="file" accept="image/*,video/*">
+          <label for="bulletinLink" data-i18n="Link (optional)">Link (optional)</label>
+          <input id="bulletinLink" type="url" maxlength="400" placeholder="https://">
+          <button id="bulletinPublish" type="button" data-i18n="Publish announcement">Publish announcement</button>
+          <p id="bulletinStatus" class="status" role="status"></p>
+        </div>
+      </section>
+
+      <details class="card campus-only post-composer">
+        <summary><span data-i18n="Create a post">Create a post</span><span class="post-composer-hint" data-i18n="School · people · world">School · people · world</span></summary>
+        <div class="post-composer-content">
+        <form id="postForm">
+          <label for="postText" data-i18n="What's happening on campus?">What's happening on campus?</label>
+          <textarea id="postText" maxlength="5000"
+                    placeholder="Share something with your classmates..." data-i18n-placeholder="Share something with your classmates..."></textarea>
+
+          <label for="postAudience" data-i18n="Who can see this post?">Who can see this post?</label>
+          <select id="postAudience">
+            <option value="school" data-i18n="My school">My school</option>
+            <option value="people" data-i18n="All Campus Connect members">All Campus Connect members</option>
+            <option value="world" data-i18n="World (public)">World (public)</option>
+          </select>
+          <p id="postAudienceNote" class="post-audience-note" data-i18n="Only people at your school can see this post.">Only people at your school can see this post.</p>
+
+          <label for="mediaUpload" data-i18n="Add a picture or video (optional)">Add a picture or video (optional)</label>
+          <input id="mediaUpload" type="file"
+                 accept="image/*,video/*">
+
+          <p class="muted" data-i18n="World posts and their photos or videos are public. Other posts are limited to the audience you choose.">World posts and their photos or videos are public. Other posts are limited to the audience you choose.</p>
+
+          <button id="publishButton" type="submit">Publish post</button>
+          <p id="postStatus" class="status" role="status"></p>
+        </form>
+        </div>
+      </details>
+
+      <section class="card feed-shell">
+        <h2>Student feed</h2>
+        <p class="campus-zone"><button id="campusScopeButton" class="campus-chip" type="button"></button></p>
+        <button id="refreshFeedButton" class="secondary" type="button">
+          Refresh feed
+        </button>
+        <p id="feedStatus" class="status" role="status"></p>
+        <div id="promotedList" class="promoted-list" hidden></div>
+        <div id="feed"></div>
+      </section>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav" aria-label="Main navigation" hidden>
+    <a href="/messages.html" data-destination="chats">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-3.2A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11.5h8M8 14.5h5"/></svg>
+      <span data-i18n="Chats">Chats</span>
+      <span id="navChatsBadge" class="bottom-nav-badge hidden"></span>
+    </a>
+    <a href="/messages.html#calls" data-destination="calls">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 3.5 10 7.2 8.4 9.5a15 15 0 0 0 6.1 6.1l2.3-1.6 3.7 2.8-.8 3.3a2 2 0 0 1-2.1 1.5A17.5 17.5 0 0 1 2.4 6.1a2 2 0 0 1 1.5-2.1l3.3-.5Z"/></svg>
+      <span data-i18n="Calls">Calls</span>
+    </a>
+    <a href="/#stories" data-destination="updates">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.8"/><circle cx="12" cy="12" r="2.5"/></svg>
+      <span data-i18n="Updates">Updates</span>
+    </a>
+    <a href="/#profile" data-destination="profile" title="More" data-i18n-title="More">
+      <span id="navProfilePhoto" class="bottom-nav-photo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+      </span>
+      <span data-i18n="More">More</span>
+    </a>
+  </nav>
+
+  <dialog id="postMenuDialog" class="post-menu-dialog" aria-label="Post options"
+          data-i18n-aria-label="Post options">
+    <div id="postMenuOptions" class="post-menu-options"></div>
+    <button id="postMenuCancel" class="post-menu-cancel" type="button" data-i18n="Cancel">Cancel</button>
+  </dialog>
+
+  <dialog id="storyViewer" class="story-viewer story-viewer--full" aria-label="Student status"
+          data-i18n-aria-label="Student status">
+    <div class="story-shell">
+      <div id="storyViewerContent" class="story-stage"></div>
+      <div id="storyProgress" class="story-progress" aria-hidden="true"></div>
+      <div class="story-head">
+        <span id="storyViewerAvatar" class="story-head-thumb"></span>
+        <span class="story-head-meta">
+          <span id="storyViewerAuthor" class="story-head-name"></span>
+          <span id="storyViewerTime" class="story-head-time"></span>
+        </span>
+        <button id="storySoundButton" class="story-head-action sound-muted" type="button" hidden>
+          <svg class="story-sound-on" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4Z" />
+            <path d="M15.8 9.6a3.5 3.5 0 0 1 0 4.8" />
+            <path d="M18.3 7a7 7 0 0 1 0 10" />
+          </svg>
+          <svg class="story-sound-off" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4Z" />
+            <path d="m16.2 9.6 4.6 4.8m0-4.8-4.6 4.8" />
+          </svg>
+        </button>
+        <button id="downloadStoryButton" class="story-head-action" type="button" hidden
+                aria-label="Save this status" title="Save">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4v11" />
+            <path d="M7 11l5 5 5-5" />
+            <path d="M5 20h14" />
+          </svg>
+        </button>
+        <button id="storyLinkButton" class="story-head-action" type="button"
+                aria-label="Copy status link" data-i18n-aria-label="Copy status link" title="Link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.3-2.3a4 4 0 0 0-5.7-5.7l-1 1" />
+            <path d="M13.5 10.5a4 4 0 0 0-5.7 0L5.5 12.8a4 4 0 0 0 5.7 5.7l1-1" />
+          </svg>
+        </button>
+        <button id="closeStoryButton" class="story-close" type="button"
+                aria-label="Close status" data-i18n-aria-label="Close status">✕</button>
+      </div>
+      <button id="previousStoryButton" class="story-side story-side--prev" type="button"
+              aria-label="Previous status" data-i18n-aria-label="Previous status">
+        <span class="story-side-icon">‹</span>
+      </button>
+      <button id="nextStoryButton" class="story-side story-side--next" type="button"
+              aria-label="Next status" data-i18n-aria-label="Next status">
+        <span class="story-side-icon">›</span>
+      </button>
+      <div id="storyFooter" class="story-footer" hidden>
+        <p id="storyReplyStatus" class="story-reply-status" role="status"></p>
+        <button id="storyLikeButton" class="story-like-btn" type="button" aria-pressed="false"
+                aria-label="Like this status" data-i18n-aria-label="Like this status">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20s-7-4.6-9.3-9A4.7 4.7 0 0 1 12 6a4.7 4.7 0 0 1 9.3 5c-2.3 4.4-9.3 9-9.3 9Z" />
+          </svg>
+          <span id="storyLikeCount" class="story-like-count"></span>
+        </button>
+        <button id="storyReactButton" class="story-react-btn" type="button"
+                aria-label="React with an emoji" data-i18n-aria-label="React with an emoji">😊</button>
+        <div id="storyReactionRow" class="story-reaction-row" hidden role="menu" aria-label="React"></div>
+        <form id="storyReplyForm" class="story-reply-form">
+          <input id="storyReplyInput" class="story-reply-input" type="text" maxlength="5000" autocomplete="off"
+                 placeholder="Reply…" data-i18n-placeholder="Reply…"
+                 aria-label="Reply to this status" data-i18n-aria-label="Reply to this status">
+          <button id="storyReplySend" class="story-reply-send" type="submit"
+                  aria-label="Send reply" data-i18n-aria-label="Send reply">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 12l16-8-6 16-3-6-7 2Z" />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="passwordResetDialog" class="story-viewer" aria-labelledby="passwordResetTitle">
+    <h2 id="passwordResetTitle">Reset your password</h2>
+    <p class="muted">We’ll email you a secure link to choose a new password.</p>
+    <form id="passwordResetForm">
+      <label for="resetEmail">Email</label>
+      <input id="resetEmail" type="email" autocomplete="email" required>
+      <button id="sendResetButton" type="submit">Send reset link</button>
+      <button id="closeResetDialogButton" class="secondary" type="button">Cancel</button>
+      <p id="resetStatus" class="status" role="status"></p>
+    </form>
+  </dialog>
+
+  <dialog id="newPasswordDialog" class="story-viewer" aria-labelledby="newPasswordTitle">
+    <h2 id="newPasswordTitle" data-i18n="Choose a new password">Choose a new password</h2>
+    <p class="muted" data-i18n="You opened the reset link from your email, so this account is signed in while you choose a new password.">You opened the reset link from your email, so this account is signed in while you choose a new password.</p>
+    <form id="newPasswordForm">
+      <label for="newPassword" data-i18n="New password (at least 6 characters)">New password (at least 6 characters)</label>
+      <input id="newPassword" type="password" minlength="6" autocomplete="new-password" required>
+      <button id="saveNewPasswordButton" type="submit" data-i18n="Save password">Save password</button>
+      <button id="cancelNewPasswordButton" class="secondary" type="button" data-i18n="Back to log in">Back to log in</button>
+      <p id="newPasswordStatus" class="status" role="status"></p>
+    </form>
+  </dialog>
+
+  <dialog id="mpesaDialog" class="story-viewer" aria-labelledby="mpesaTitle">
+    <h2 id="mpesaTitle" data-i18n="Support Campus Connect">Support Campus Connect</h2>
+    <p class="muted" data-i18n="Campus Connect stays free for every student. If it helps you, a small M-Pesa gift keeps it running.">Campus Connect stays free for every student. If it helps you, a small M-Pesa gift keeps it running.</p>
+    <p class="mpesa-label" data-i18n="Send money to">Send money to</p>
+    <p class="mpesa-number" id="mpesaNumber">0793 172 970</p>
+    <button id="copyMpesaButton" class="secondary" type="button" data-i18n="Copy the number">Copy the number</button>
+    <p id="mpesaStatus" class="status" role="status"></p>
+    <ol class="mpesa-steps">
+      <li data-i18n="Open the M-Pesa menu on your phone.">Open the M-Pesa menu on your phone.</li>
+      <li data-i18n="Choose Send Money.">Choose Send Money.</li>
+      <li data-i18n="Enter the number above and check the name your phone shows.">Enter the number above and check the name your phone shows.</li>
+      <li data-i18n="Type the amount and your PIN, then confirm.">Type the amount and your PIN, then confirm.</li>
+    </ol>
+    <p class="mpesa-label" data-i18n="From another country: send to M-Pesa">From another country: send to M-Pesa</p>
+    <p class="mpesa-number" id="mpesaInternationalNumber">+254 793 172 970</p>
+    <button id="copyMpesaInternationalButton" class="secondary" type="button" data-i18n="Copy the international number">Copy the international number</button>
+    <p class="muted" data-i18n="Open WorldRemit, Sendwave, Remitly or Wise, choose Kenya and then M-Pesa, and enter that number. The money lands in the same account and the sender pays the fee.">Open WorldRemit, Sendwave, Remitly or Wise, choose Kenya and then M-Pesa, and enter that number. The money lands in the same account and the sender pays the fee.</p>
+    <p class="mpesa-links">
+      <a href="https://www.worldremit.com/en/kenya/mobile/m-pesa" target="_blank" rel="noopener noreferrer">WorldRemit</a>
+      <a href="https://www.sendwave.com/" target="_blank" rel="noopener noreferrer">Sendwave</a>
+      <a href="https://www.remitly.com/" target="_blank" rel="noopener noreferrer">Remitly</a>
+      <a href="https://wise.com/us/send-money/send-money-to-m-pesa" target="_blank" rel="noopener noreferrer">Wise</a>
+    </p>
+    <p class="muted" data-i18n="This is a gift to the developer, not a payment. Campus Connect never sees your PIN or your transaction code.">This is a gift to the developer, not a payment. Campus Connect never sees your PIN or your transaction code.</p>
+    <button id="closeMpesaDialogButton" type="button" data-i18n="Close">Close</button>
+  </dialog>
+
+  <dialog id="feesDialog" class="story-viewer" aria-labelledby="feesTitle">
+    <h2 id="feesTitle" data-i18n="Pay school fees">Pay school fees</h2>
+    <p class="muted" data-i18n="Campus Connect never holds your fees. These are your own school's payment details, saved only on this phone, so you can pay from home or from anywhere in the world.">Campus Connect never holds your fees. These are your own school's payment details, saved only on this phone, so you can pay from home or from anywhere in the world.</p>
+
+    <p class="fees-sub" data-i18n="1. M-Pesa Paybill">1. M-Pesa Paybill</p>
+    <div class="fees-field">
+      <label for="feesPaybill" data-i18n="Paybill number">Paybill number</label>
+      <input id="feesPaybill" type="text" inputmode="numeric" autocomplete="off" spellcheck="false">
+      <button class="fees-copy" type="button" data-fees-copy="feesPaybill" data-i18n="Copy paybill">Copy paybill</button>
+    </div>
+    <div class="fees-field">
+      <label for="feesAccount" data-i18n="Account number (your admission number)">Account number (your admission number)</label>
+      <input id="feesAccount" type="text" autocomplete="off" spellcheck="false">
+      <button class="fees-copy" type="button" data-fees-copy="feesAccount" data-i18n="Copy account number">Copy account number</button>
+    </div>
+    <div class="fees-field">
+      <label for="feesAmount" data-i18n="Amount in shillings (optional)">Amount in shillings (optional)</label>
+      <input id="feesAmount" type="text" inputmode="decimal" autocomplete="off">
+    </div>
+    <ol class="mpesa-steps">
+      <li data-i18n="Dial *234# on your phone, or open the M-Pesa menu.">Dial *234# on your phone, or open the M-Pesa menu.</li>
+      <li data-i18n="Choose Lipa na M-Pesa, then Pay Bill.">Choose Lipa na M-Pesa, then Pay Bill.</li>
+      <li data-i18n="Enter the paybill number, then the account number above.">Enter the paybill number, then the account number above.</li>
+      <li data-i18n="Enter the amount and your PIN, then confirm. The school receives it straight away.">Enter the amount and your PIN, then confirm. The school receives it straight away.</li>
+    </ol>
+
+    <p class="fees-sub" data-i18n="2. Bank account, from any country">2. Bank account, from any country</p>
+    <div class="fees-field">
+      <label for="feesBankName" data-i18n="Bank name and branch">Bank name and branch</label>
+      <input id="feesBankName" type="text" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="fees-field">
+      <label for="feesBankAccount" data-i18n="School bank account number">School bank account number</label>
+      <input id="feesBankAccount" type="text" inputmode="numeric" autocomplete="off" spellcheck="false">
+      <button class="fees-copy" type="button" data-fees-copy="feesBankAccount" data-i18n="Copy bank account number">Copy bank account number</button>
+    </div>
+    <div class="fees-field">
+      <label for="feesBankSwift" data-i18n="SWIFT or BIC code, for senders abroad">SWIFT or BIC code, for senders abroad</label>
+      <input id="feesBankSwift" type="text" autocomplete="off" spellcheck="false">
+      <button class="fees-copy" type="button" data-fees-copy="feesBankSwift" data-i18n="Copy SWIFT code">Copy SWIFT code</button>
+    </div>
+    <p class="muted" data-i18n="Whoever pays from abroad uses their own bank, Wise, Remitly or WorldRemit: choose Kenya, then Bank account, and paste these details. The money goes to the school, never to Campus Connect.">Whoever pays from abroad uses their own bank, Wise, Remitly or WorldRemit: choose Kenya, then Bank account, and paste these details. The money goes to the school, never to Campus Connect.</p>
+    <p class="mpesa-links">
+      <a href="https://wise.com/gb/send-money/send-money-to-kenya" target="_blank" rel="noopener noreferrer">Wise</a>
+      <a href="https://www.remitly.com/" target="_blank" rel="noopener noreferrer">Remitly</a>
+      <a href="https://www.worldremit.com/en/kenya" target="_blank" rel="noopener noreferrer">WorldRemit</a>
+    </p>
+
+    <div class="fees-actions">
+      <button id="saveFeesButton" type="button" data-i18n="Save on this phone">Save on this phone</button>
+      <button id="clearFeesButton" class="secondary" type="button" data-i18n="Clear the details">Clear the details</button>
+    </div>
+    <p id="feesStatus" class="status" role="status"></p>
+    <p class="muted" data-i18n="Check every number against your official fee invoice before you pay. Campus Connect cannot see or change what your school is owed.">Check every number against your official fee invoice before you pay. Campus Connect cannot see or change what your school is owed.</p>
+    <button id="closeFeesDialogButton" type="button" data-i18n="Close">Close</button>
+  </dialog>
+
+  <script>
+    /* Everything below this line is a module, and a module an engine cannot parse
+       fails in total silence: a blank page, no error on screen, and no way for a
+       student to work out that the phone is the reason. This script is ES5 on
+       purpose, so it still runs on that old engine. It says nothing while the
+       bundle is merely slow - only when the bundle never started at all. */
+    (function () {
+      var WORDS = {
+        en: ["Campus Connect could not start on this phone.",
+          "Its web engine is too old for this app. Update Android System WebView in the Play Store, then reopen Campus Connect.",
+          "Reload"],
+        fr: ["Campus Connect n'a pas pu démarrer sur ce téléphone.",
+          "Son moteur web est trop ancien pour cette application. Mettez à jour Android System WebView dans le Play Store, puis rouvrez Campus Connect.",
+          "Recharger"],
+        sw: ["Campus Connect haikuweza kuanza kwenye simu hii.",
+          "Injini yake ya wavuti ni ya zamani sana kwa programu hii. Sasisha Android System WebView katika Play Store, kisha ufunue Campus Connect tena.",
+          "Pakia upya"],
+        es: ["Campus Connect no pudo iniciar en este teléfono.",
+          "Su motor web es demasiado viejo para esta aplicación. Actualiza Android System WebView en Play Store y vuelve a abrir Campus Connect.",
+          "Recargar"]
+      };
+      var tongue = String(navigator.language || "en").slice(0, 2).toLowerCase();
+      var lines = WORDS[tongue] || WORDS.en;
+
+      function speak() {
+        /* compat.js sets this flag as the first thing it does, so any engine that
+           could read the bundle at all has already stood this down. */
+        if (window.__ccStarted || document.getElementById("cc-boot-failure")) return;
+        var box = document.createElement("div");
+        box.id = "cc-boot-failure";
+        box.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:99999;"
+          + "padding:16px 18px 18px;background:#7a1414;color:#fff;text-align:center;"
+          + "font:400 15px/1.5 Roboto,Helvetica,Arial,sans-serif";
+        var title = document.createElement("div");
+        title.style.cssText = "font-size:17px;font-weight:700";
+        title.textContent = lines[0];
+        var detail = document.createElement("div");
+        detail.style.marginTop = "6px";
+        detail.textContent = lines[1];
+        var again = document.createElement("button");
+        again.type = "button";
+        again.textContent = lines[2];
+        again.style.cssText = "margin-top:12px;padding:9px 22px;border:0;border-radius:8px;"
+          + "background:#fff;color:#7a1414;font-size:15px;font-weight:700";
+        again.onclick = function () { window.location.reload(); };
+        box.appendChild(title);
+        box.appendChild(detail);
+        box.appendChild(again);
+        document.body.appendChild(box);
+      }
+
+      /* A script this engine refused reports itself the moment it is read, so a
+         phone that can never start the app is told straight away rather than after
+         a wait, and the wait still covers a bundle that never arrives. */
+      window.addEventListener("error", function (event) {
+        var node = event && event.target;
+        if (node && String(node.tagName).toUpperCase() === "SCRIPT") speak();
+      }, true);
+      window.setTimeout(speak, 20000);
+    })();
+  </script>
+
+</body>
+</html>
