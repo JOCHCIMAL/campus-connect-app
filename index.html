@@ -375,6 +375,25 @@
       max-width: 100%;
     }
     .post-video-wrap .post-video { width: 100%; }
+    .post-media-carousel { position: relative; width: 100%; overflow: hidden; background: #080812; }
+    .post-media-track { display: flex; width: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+    .post-media-track::-webkit-scrollbar { display: none; }
+    .post-media-slide { position: relative; flex: 0 0 100%; min-width: 100%; scroll-snap-align: start; }
+    .post-media-slide img, .post-media-slide video { display: block; width: 100%; max-height: 74vh; aspect-ratio: 4 / 5; object-fit: contain; background: #080812; }
+    .post-media-count { position: absolute; z-index: 2; top: 12px; right: 12px; padding: 5px 9px; border-radius: 999px; background: #111126b8; color: #fff; font-size: 12px; font-weight: 700; }
+    .post-media-nav { position: absolute; z-index: 2; top: 50%; display: grid; width: 32px; height: 32px; place-items: center; padding: 0 0 3px; border: 0; border-radius: 50%; background: #11112699; color: #fff; font-size: 27px; line-height: 1; transform: translateY(-50%); cursor: pointer; }
+    .post-media-prev { left: 9px; }
+    .post-media-next { right: 9px; }
+    .post-media-dots { position: absolute; z-index: 2; right: 0; bottom: 10px; left: 0; display: flex; justify-content: center; gap: 5px; pointer-events: none; }
+    .post-media-dots i { width: 6px; height: 6px; border-radius: 50%; background: #ffffff80; }
+    .post-media-dots i.is-active { background: #fff; }
+    .post-media-picker { display: grid; gap: 10px; }
+    .post-media-picker-note { margin: 0; color: var(--muted); font-size: 13px; }
+    .post-media-previews { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; }
+    .post-media-preview { position: relative; width: 76px; height: 96px; flex: 0 0 76px; overflow: hidden; border: 1px solid var(--border); border-radius: 10px; background: var(--background); }
+    .post-media-preview img, .post-media-preview video { width: 100%; height: 100%; object-fit: cover; }
+    .post-media-preview-number { position: absolute; bottom: 5px; left: 5px; padding: 2px 6px; border-radius: 999px; background: #111126bf; color: #fff; font-size: 11px; }
+    .post-media-preview-remove { position: absolute; top: 4px; right: 4px; display: grid; width: 24px; height: 24px; place-items: center; padding: 0; border: 0; border-radius: 50%; background: #111126d9; color: #fff; font-size: 16px; line-height: 1; cursor: pointer; }
     .post-video-mute {
       position: absolute;
       right: 10px;
@@ -458,7 +477,7 @@
       z-index: 20;
       left: 50%;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       width: min(560px, calc(100% - 24px));
       min-height: 66px;
       padding: 6px;
@@ -748,6 +767,65 @@
     .ig-comment-form input { flex: 1; padding: 6px 0; border: 0; background: transparent; font-size: 14px; }
     .ig-comment-form input:focus { border-color: transparent; outline: none; box-shadow: none; }
     .ig-send { padding: 6px 2px; border: 0; background: none; color: var(--blue); font-size: 14px; font-weight: 600; cursor: pointer; }
+
+    /* Reels use the existing post records, privacy rules, reactions, comments,
+       saved-post list and share links in a full-screen vertical viewer. */
+    #reelsScreen { display: none; position: relative; width: 100%; height: 100dvh; overflow: hidden; background: #050505; color: #fff; }
+    body.reels-mode > header { display: none; }
+    body.reels-mode main.container { position: fixed; inset: 0; width: auto; max-width: none; margin: 0; padding: 0; }
+    body.reels-mode #appSection { display: block; margin: 0; padding: 0; }
+    body.reels-mode #appSection > :not(#reelsScreen) { display: none !important; }
+    body.reels-mode #reelsScreen { display: block; }
+    .reels-status { position: absolute; z-index: 2; top: 50%; right: 22px; left: 22px; margin: 0; color: #fff; text-align: center; transform: translateY(-50%); }
+    .reels-list { width: 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-type: y mandatory; scrollbar-width: none; }
+    .reels-list::-webkit-scrollbar { display: none; }
+    .reel-card { position: relative; width: 100%; height: 100dvh; min-height: 520px; overflow: hidden; isolation: isolate; background: #050505; color: #fff; scroll-snap-align: start; scroll-snap-stop: always; }
+    .reel-video-wrap { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; max-width: none; overflow: hidden; }
+    .reel-video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-height: none; margin: 0; border-radius: 0; object-fit: cover; background: #050505; }
+    .reel-shade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgb(0 0 0 / 64%), transparent 23%, transparent 54%, rgb(0 0 0 / 76%)); }
+    .reel-head { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); right: 12px; left: 12px; display: flex; align-items: center; gap: 9px; min-width: 0; color: #fff; }
+    .reel-author-ring { display: grid; width: 42px; height: 42px; flex: 0 0 42px; place-items: center; padding: 2px; border-radius: 50%; background: conic-gradient(#f9ce34, #ee2a7b 45%, #6228d7 75%, #f9ce34); }
+    .reel-author-avatar { display: grid; width: 100%; height: 100%; place-items: center; overflow: hidden; border: 2px solid #111; border-radius: 50%; background: #343434; color: #fff; font-size: 15px; font-weight: 700; }
+    .reel-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .reel-headline { display: grid; flex: 1; min-width: 0; gap: 3px; text-shadow: 0 1px 4px rgb(0 0 0 / 70%); }
+    .reel-username, .reel-audio { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .reel-username { font-size: 14px; font-weight: 750; }
+    .reel-audio { font-size: 12px; }
+    .reel-head-action { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border: 0; border-radius: 50%; background: rgb(0 0 0 / 20%); color: #fff; cursor: pointer; }
+    .reel-head-action svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+    .reel-actions { position: absolute; z-index: 2; right: 10px; bottom: calc(96px + env(safe-area-inset-bottom)); display: grid; justify-items: center; gap: 16px; }
+    .reel-like-burst { position: absolute; z-index: 3; top: 50%; left: 50%; display: grid; width: 104px; height: 104px; place-items: center; color: #fff; opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(.35); }
+    .reel-like-burst svg { width: 100%; height: 100%; fill: #ff304f; stroke: #fff; stroke-width: 1.5; filter: drop-shadow(0 2px 12px #0008); }
+    .reel-like-burst.play { animation: reel-like-pop .8s ease-out forwards; }
+    @keyframes reel-like-pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.35); } 22% { opacity: 1; transform: translate(-50%, -50%) scale(1.16); } 42% { transform: translate(-50%, -50%) scale(.94); } 65% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
+    .reel-action { display: grid; justify-items: center; gap: 2px; min-width: 42px; padding: 0; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; text-shadow: 0 1px 4px rgb(0 0 0 / 75%); }
+    .reel-action svg { width: 29px; height: 29px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .reel-action.is-on { color: #ff4d73; }
+    .reel-action.is-on svg { fill: currentColor; }
+    .reel-action-count { min-height: 14px; font-size: 11px; font-weight: 750; }
+    .reel-caption { position: absolute; z-index: 2; right: 60px; bottom: calc(84px + env(safe-area-inset-bottom)); left: 14px; margin: 0; color: #fff; font-size: 14px; line-height: 1.4; text-shadow: 0 1px 4px rgb(0 0 0 / 85%); overflow-wrap: anywhere; }
+    .reel-caption .ig-caption-author { display: inline; }
+    .reel-caption .ig-caption-short, .reel-caption .ig-caption-full { display: inline; }
+    .reel-caption .ig-more { color: rgb(255 255 255 / 80%); }
+    .reel-comments { position: absolute; z-index: 4; right: 0; bottom: 0; left: 0; display: none; max-height: 52%; padding: 14px 14px calc(74px + env(safe-area-inset-bottom)); overflow-y: auto; border-radius: 18px 18px 0 0; background: var(--surface); color: var(--text); }
+    .reel-card.reel-comments-open .reel-comments { display: block; }
+    .reel-comments .ig-comments { display: grid; gap: 8px; }
+    .reel-comments .ig-comments.hidden { display: grid; }
+    .reel-comments .ig-comment { margin: 0; }
+    .reel-comments .ig-comment-form { position: fixed; z-index: 5; right: 0; bottom: calc(60px + env(safe-area-inset-bottom)); left: 0; display: none; padding: 8px 12px; background: var(--surface); }
+    .reel-card.reel-comments-open .reel-comment-form { display: flex; }
+    .reel-comment-close { position: sticky; top: 0; float: right; border: 0; background: none; color: var(--text); font-size: 22px; cursor: pointer; }
+    .reel-ended { position: absolute; z-index: 3; inset: 0; display: none; align-content: center; justify-items: center; gap: 12px; background: rgb(0 0 0 / 44%); }
+    .reel-card.ended .reel-ended { display: grid; }
+    .reel-ended button { border: 0; border-radius: 24px; background: #fff; color: #111; font: inherit; font-weight: 750; cursor: pointer; }
+    .reel-watch-more { display: flex; align-items: center; gap: 8px; padding: 13px 18px; }
+    .reel-watch-again { padding: 6px 12px; background: transparent !important; color: #fff !important; text-shadow: 0 1px 4px #000; }
+    .reel-list-empty { display: grid; height: 100%; padding: 24px; place-items: center; color: #fff; text-align: center; }
+    @media (min-width: 700px) {
+      body.reels-mode #reelsScreen { display: grid; place-items: center; }
+      .reels-list { width: min(100%, 480px); border-radius: 10px; }
+      .reel-card { height: 100dvh; }
+    }
     .post-menu-dialog { width: min(340px, 92vw); padding: 8px; border: 0; border-radius: 14px; background: var(--surface); color: var(--text); }
     .post-menu-dialog::backdrop { background: rgb(0 0 0 / 55%); }
     .post-menu-options { display: grid; }
@@ -1316,15 +1394,17 @@
       .you-details { margin-left: auto; margin-right: auto; max-width: 620px; }
     }
   </style>
-  <script type="module" crossorigin src="/assets/main-OrmSdL63.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/supabase-BWkgFFPF.js">
-  <link rel="modulepreload" crossorigin href="/assets/offline-banner-MfcCChk8.js">
-  <link rel="modulepreload" crossorigin href="/assets/profile-identity-Dr8T9JaE.js">
-  <link rel="modulepreload" crossorigin href="/assets/chat-organize-BW0RJTxO.js">
-  <link rel="modulepreload" crossorigin href="/assets/offline-store-DtZovh2O.js">
-  <link rel="modulepreload" crossorigin href="/assets/company-directory-Ce0IRj1n.js">
-  <link rel="modulepreload" crossorigin href="/assets/staff-verification-CwdSTe46.js">
+  <script type="module" crossorigin src="/assets/main-ADhlDTnL.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-BZASSCr-.js">
+  <link rel="modulepreload" crossorigin href="/assets/offline-banner-BQbMZSz_.js">
+  <link rel="modulepreload" crossorigin href="/assets/profile-identity-DKOk6HO_.js">
+  <link rel="modulepreload" crossorigin href="/assets/chat-organize-Dbcmd9I6.js">
+  <link rel="modulepreload" crossorigin href="/assets/offline-store-DwnENRt3.js">
+  <link rel="modulepreload" crossorigin href="/assets/company-directory-DKALjUdE.js">
+  <link rel="modulepreload" crossorigin href="/assets/staff-verification-BbVzJLUf.js">
   <link rel="stylesheet" crossorigin href="/assets/offline-banner-BFBmpa7B.css">
+  <script type="module">import.meta.url;import("_").catch(()=>1);(async function*(){})().next();if(location.protocol!="file:"){window.__vite_is_modern_browser=true}</script>
+  <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
 </head>
 
 <body>
@@ -1393,10 +1473,7 @@
         <label for="loginMethod" data-i18n="Sign-in method">Sign-in method</label>
         <select id="loginMethod">
           <option value="email-password" data-i18n="Email and password">Email and password</option>
-          <option value="email-link" data-i18n="Email sign-in link">Email sign-in link</option>
           <option value="phone" data-i18n="Phone number and password">Phone number and password</option>
-          <option value="registration-number" data-i18n="Registration number and password">Registration number and password</option>
-          <option value="phone-device" data-i18n="Use phone saved on this device">Use phone saved on this device</option>
         </select>
 
         <div id="emailLoginFields">
@@ -1410,6 +1487,7 @@
         <div id="passwordLoginFields">
           <label for="loginPassword" data-i18n="Password">Password</label>
           <input id="loginPassword" type="password" autocomplete="current-password" required>
+          <small data-i18n="Use the password you set for Campus Connect.">Use the password you set for Campus Connect.</small>
         </div>
         <div id="phoneLoginFields" class="hidden">
           <label for="loginPhoneCountryCode" data-i18n="Country calling code">Country calling code</label>
@@ -1420,6 +1498,13 @@
                    placeholder="712345678" maxlength="14" pattern="[0-9]{4,14}" aria-label="Phone number" data-i18n-aria-label="Phone number">
           </div>
           <p class="muted" data-i18n="Enter your phone number without its country code.">Enter your phone number without its country code.</p>
+        </div>
+        <div id="phoneLoginCodeFields" class="hidden">
+          <label for="loginPhoneCode" data-i18n="SMS verification code">SMS verification code</label>
+          <input id="loginPhoneCode" type="text" inputmode="numeric" autocomplete="one-time-code"
+                 maxlength="6" pattern="[0-9]{6}" aria-describedby="loginPhoneCodeHint">
+          <p class="muted" id="loginPhoneCodeHint" data-i18n="Enter the SMS verification code sent to your phone.">Enter the SMS verification code sent to your phone.</p>
+          <p class="auth-help"><button id="resendPhoneLoginCode" type="button" data-i18n="Resend SMS code">Resend SMS code</button></p>
         </div>
 
         <button id="loginSubmitButton" type="submit" data-i18n="Log in">Log in</button>
@@ -1436,11 +1521,13 @@
       </form>
       <form id="registerForm" class="hidden">
         <h3 data-i18n="Create your account">Create your account</h3>
+        <p class="muted" data-i18n="Use one Campus Connect account everywhere. Choose your student, lecturer, staff or company role, then add its registration details here or later in your profile.">Use one Campus Connect account everywhere. Choose your student, lecturer, staff or company role, then add its registration details here or later in your profile.</p>
         <label for="registerMethod" data-i18n="Registration method">Registration method</label>
         <select id="registerMethod">
           <option value="email" data-i18n="Email and password">Email and password</option>
           <option value="phone" data-i18n="Phone number">Phone number</option>
         </select>
+        <p class="muted" data-i18n="Use the same email address or phone number and password when you log in.">Use the same email address or phone number and password when you log in.</p>
 
         <label for="registerName" data-i18n="Full name">Full name</label>
         <input id="registerName" type="text" maxlength="80"
@@ -1455,7 +1542,7 @@
         <div id="emailRegistrationFields">
           <label for="registerEmail" data-i18n="Email">Email</label>
           <input id="registerEmail" type="email" autocomplete="email" required>
-          <p class="muted" data-i18n="Any valid email address from any country is welcome; no school email is required.">Any valid email address from any country is welcome; no school email is required.</p>
+          <p class="muted" data-i18n="Use an email address you can open to confirm your account if asked.">Use an email address you can open to confirm your account if asked.</p>
         </div>
         <div id="phoneRegistrationFields" class="hidden">
           <label for="registerPhoneCountryCode" data-i18n="Country calling code">Country calling code</label>
@@ -1466,6 +1553,13 @@
                    placeholder="712345678" maxlength="14" pattern="[0-9]{4,14}" aria-label="Phone number" data-i18n-aria-label="Phone number">
           </div>
           <p class="muted" data-i18n="Enter your phone number without its country code.">Enter your phone number without its country code.</p>
+        </div>
+        <div id="phoneSignupCodeFields" class="hidden">
+          <label for="registerPhoneCode" data-i18n="SMS verification code">SMS verification code</label>
+          <input id="registerPhoneCode" type="text" inputmode="numeric" autocomplete="one-time-code"
+                 maxlength="6" pattern="[0-9]{6}" aria-describedby="registerPhoneCodeHint">
+          <p class="muted" id="registerPhoneCodeHint" data-i18n="Enter the SMS verification code sent to your phone.">Enter the SMS verification code sent to your phone.</p>
+          <p class="auth-help"><button id="resendPhoneSignupCode" type="button" data-i18n="Resend SMS code">Resend SMS code</button></p>
         </div>
 
         <label for="registerCourse" data-i18n="University, school, course, or organization (optional)">University, school, course, or organization (optional)</label>
@@ -1489,7 +1583,7 @@
             <option value="staff" data-i18n="Staff">Staff</option>
           </select>
           <p class="muted" data-i18n="Write the name as it appears on its letterhead. Once you are signed in, the companies page can match it to the list or add it there.">Write the name as it appears on its letterhead. Once you are signed in, the companies page can match it to the list or add it there.</p>
-          <p class="muted" data-i18n="A company signs in with an email address. It gets its own zone in the feed and may write announcements about its company, but it does not get classes.">A company signs in with an email address. It gets its own zone in the feed and may write announcements about its company, but it does not get classes.</p>
+          <p class="muted" data-i18n="A company signs in with the email address or phone number chosen above. It gets its own zone in the feed and may write announcements about its company, but it does not get classes.">A company signs in with the email address or phone number chosen above. It gets its own zone in the feed and may write announcements about its company, but it does not get classes.</p>
         </div>
 
         <label for="registerRole" data-i18n="I am a">I am a</label>
@@ -1502,8 +1596,8 @@
           <option value="community" data-i18n="Community member (no campus ID)">Community member (no campus ID)</option>
         </select>
         <p class="muted" id="registerRoleHint" data-i18n="Students start immediately. A lecturer has to show a National ID, a staff ID card and the letter of introduction, and an admin has to accept them before the university system opens.">Students start immediately. A lecturer has to show a National ID, a staff ID card and the letter of introduction, and an admin has to accept them before the university system opens.</p>
-        <p class="muted" id="registerMemberNote" hidden data-i18n="An account outside the university signs in with an email address and reads the bulletin: what is happening in the world, at the university and with the people in it. It does not get chats, posts, statuses or classes, and no student can message it.">An account outside the university signs in with an email address and reads the bulletin: what is happening in the world, at the university and with the people in it. It does not get chats, posts, statuses or classes, and no student can message it.</p>
-        <p class="muted" id="registerCommunityNote" hidden data-i18n="A community account uses a phone number and password: no registration number, no staff ID, no university to name. Chats, posts and statuses are all yours. Classes and campus services stay closed because they belong to the university.">A community account uses a phone number and password: no registration number, no staff ID, no university to name. Chats, posts and statuses are all yours. Classes and campus services stay closed because they belong to the university.</p>
+        <p class="muted" id="registerMemberNote" hidden data-i18n="An account outside the university signs in with the email address or phone number used to register and reads the bulletin: what is happening in the world, at the university and with the people in it. It does not get chats, posts, statuses or classes, and no student can message it.">An account outside the university signs in with the email address or phone number used to register and reads the bulletin: what is happening in the world, at the university and with the people in it. It does not get chats, posts, statuses or classes, and no student can message it.</p>
+        <p class="muted" id="registerCommunityNote" hidden data-i18n="A community member uses the email address or phone number chosen at registration for the same Campus Connect account. No campus ID or university is needed. If your role changes, add student, lecturer or staff details to this profile instead of creating another app account.">A community member uses the email address or phone number chosen at registration for the same Campus Connect account. No campus ID or university is needed. If your role changes, add student, lecturer or staff details to this profile instead of creating another app account.</p>
 
         <div id="registerNumberFields">
           <label for="registerNumber" id="registerNumberLabel" data-i18n="Your registration number">Your registration number</label>
@@ -1537,7 +1631,7 @@
           <p class="muted" data-i18n="Use at least 6 characters. You will use this password with your phone number or email.">Use at least 6 characters. You will use this password with your phone number or email.</p>
         </div>
 
-        <button type="submit" data-i18n="Create account">Create account</button>
+        <button id="registerSubmitButton" type="submit" data-i18n="Create account">Create account</button>
         <p id="registerStatus" class="status" role="status"></p>
       </form>
     </section>
@@ -1567,7 +1661,7 @@
           </button>
           <div class="you-avatar-wrap">
             <div id="youAvatar" class="you-avatar" aria-hidden="true"></div>
-            <button id="youAvatarButton" class="you-avatar-plus" type="button" aria-label="Change profile picture" data-i18n-aria-label="Change profile picture">+</button>
+            <button id="youAvatarButton" class="you-avatar-plus" type="button" aria-label="Change profile picture anytime" data-i18n-aria-label="Change profile picture anytime" title="Change profile picture anytime" data-i18n-title="Change profile picture anytime">+</button>
           </div>
           <button id="youNameRow" class="you-name-row" type="button" aria-expanded="false" aria-controls="youDetails">
             <span id="youName">…</span>
@@ -1693,7 +1787,7 @@
           <h2 data-i18n="About Campus Connect">About Campus Connect</h2>
           <p data-i18n="Share updates, find people, chat and call on campus.">Share updates, find people, chat and call on campus.</p>
           <p class="app-owner-name">Developed by Josh Chimal Akim · BSc Computer Science, Kabarak University</p>
-          <p class="muted" id="appVersionLine">Campus Connect v1.47</p>
+          <p class="muted" id="appVersionLine">Campus Connect v1.77</p>
           <p class="muted" id="storageLine">Campus Connect keeps its media on this phone.</p>
           <p class="muted"><small id="storageNote"></small></p>
           <button type="button" class="secondary" id="clearSavedMedia" hidden data-i18n="Clear saved media">Clear saved media</button>
@@ -1733,6 +1827,7 @@
             <label for="profileAvatarFile" data-i18n="Profile picture">Profile picture</label>
             <img id="profileAvatarPreview" alt="Profile picture preview" hidden>
             <input id="profileAvatarFile" type="file" accept="image/*">
+            <small data-i18n="Change your profile picture whenever you want. The saved photo appears across your profile, chats and calls.">Change your profile picture whenever you want. The saved photo appears across your profile, chats and calls.</small>
             <label for="profileName" data-i18n="Display name">Display name</label>
             <input id="profileName" type="text" maxlength="100" required>
             <label for="profileUsername" data-i18n="Username">Username</label>
@@ -1812,6 +1907,8 @@
             <label class="contact-sharing-option"><input id="shareProfilePhone" type="checkbox"> <span data-i18n="Show my contact phone to signed-in students">Show my contact phone to signed-in students</span></label>
             <label class="contact-sharing-option"><input id="discoverProfile" type="checkbox"> <span data-i18n="Show my profile in student search">Show my profile in student search</span></label>
             <small data-i18n="Your profile is hidden from student search unless you enable this option. Your profile picture remains visible in chats.">Your profile is hidden from student search unless you enable this option. Your profile picture remains visible in chats.</small>
+            <label class="contact-sharing-option"><input id="allowFollowerStatuses" type="checkbox"> <span data-i18n="Let all my followers see my statuses">Let all my followers see my statuses</span></label>
+            <small data-i18n="Anyone who follows you can view your active statuses, even if you do not follow them back. Blocked accounts remain excluded.">Anyone who follows you can view your active statuses, even if you do not follow them back. Blocked accounts remain excluded.</small>
             <p class="muted" data-i18n="Blocked members">Blocked members</p>
             <a class="you-inline-link" href="/messages.html" data-i18n="Manage blocked members">Manage blocked members</a>
           </fieldset>
@@ -1917,7 +2014,7 @@
             <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
             <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
           </svg>
-          <span data-i18n="Only your friends can see your statuses.">Only your friends can see your statuses.</span>
+          <span id="statusAudienceMessage" data-i18n="Mutual connections and people you've exchanged messages with can see your statuses.">Mutual connections and people you've exchanged messages with can see your statuses.</span>
         </p>
 
         <p id="storyStatus" class="status" role="status" aria-live="polite"></p>
@@ -1991,9 +2088,12 @@
           </select>
           <p id="postAudienceNote" class="post-audience-note" data-i18n="Only people at your school can see this post.">Only people at your school can see this post.</p>
 
-          <label for="mediaUpload" data-i18n="Add a picture or video (optional)">Add a picture or video (optional)</label>
-          <input id="mediaUpload" type="file"
-                 accept="image/*,video/*">
+          <div class="post-media-picker">
+            <label for="mediaUpload">Add photos or short videos (up to 10)</label>
+            <input id="mediaUpload" type="file" accept="image/*,video/*" multiple>
+            <p id="postMediaPickerNote" class="post-media-picker-note">Select several items at once. Photos and videos will appear together in a swipeable post.</p>
+            <div id="postMediaPreviews" class="post-media-previews" aria-live="polite"></div>
+          </div>
 
           <p class="muted" data-i18n="World posts and their photos or videos are public. Other posts are limited to the audience you choose.">World posts and their photos or videos are public. Other posts are limited to the audience you choose.</p>
 
@@ -2013,23 +2113,32 @@
         <div id="promotedList" class="promoted-list" hidden></div>
         <div id="feed"></div>
       </section>
+
+      <section id="reelsScreen" aria-label="Reels" data-i18n-aria-label="Reels">
+        <p id="reelsStatus" class="reels-status status" role="status" aria-live="polite"></p>
+        <div id="reelsList" class="reels-list" aria-label="Campus Connect Reels"></div>
+      </section>
     </section>
 
   </main>
 
   <nav class="bottom-nav" aria-label="Main navigation" hidden>
-    <a href="/messages.html" data-destination="chats">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-3.2A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11.5h8M8 14.5h5"/></svg>
-      <span data-i18n="Chats">Chats</span>
-      <span id="navChatsBadge" class="bottom-nav-badge hidden"></span>
+    <a href="/#stories" data-destination="updates">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.8"/><circle cx="12" cy="12" r="2.5"/></svg>
+      <span data-i18n="Updates">Updates</span>
+    </a>
+    <a href="/#reels" data-destination="reels">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/><path d="M4 4v16"/></svg>
+      <span data-i18n="Reels">Reels</span>
     </a>
     <a href="/messages.html#calls" data-destination="calls">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 3.5 10 7.2 8.4 9.5a15 15 0 0 0 6.1 6.1l2.3-1.6 3.7 2.8-.8 3.3a2 2 0 0 1-2.1 1.5A17.5 17.5 0 0 1 2.4 6.1a2 2 0 0 1 1.5-2.1l3.3-.5Z"/></svg>
       <span data-i18n="Calls">Calls</span>
     </a>
-    <a href="/#stories" data-destination="updates">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.8"/><circle cx="12" cy="12" r="2.5"/></svg>
-      <span data-i18n="Updates">Updates</span>
+    <a href="/messages.html" data-destination="chats">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-3.2A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11.5h8M8 14.5h5"/></svg>
+      <span data-i18n="Chats">Chats</span>
+      <span id="navChatsBadge" class="bottom-nav-badge hidden"></span>
     </a>
     <a href="/#profile" data-destination="profile" title="More" data-i18n-title="More">
       <span id="navProfilePhoto" class="bottom-nav-photo" aria-hidden="true">
@@ -2238,16 +2347,20 @@
       var WORDS = {
         en: ["Campus Connect could not start on this phone.",
           "Its web engine is too old for this app. Update Android System WebView in the Play Store, then reopen Campus Connect.",
-          "Reload"],
+          "Reload",
+          "Open Android System WebView in Play Store"],
         fr: ["Campus Connect n'a pas pu démarrer sur ce téléphone.",
           "Son moteur web est trop ancien pour cette application. Mettez à jour Android System WebView dans le Play Store, puis rouvrez Campus Connect.",
-          "Recharger"],
+          "Recharger",
+          "Ouvrir Android System WebView dans Play Store"],
         sw: ["Campus Connect haikuweza kuanza kwenye simu hii.",
           "Injini yake ya wavuti ni ya zamani sana kwa programu hii. Sasisha Android System WebView katika Play Store, kisha ufunue Campus Connect tena.",
-          "Pakia upya"],
+          "Pakia upya",
+          "Fungua Android System WebView kwenye Play Store"],
         es: ["Campus Connect no pudo iniciar en este teléfono.",
           "Su motor web es demasiado viejo para esta aplicación. Actualiza Android System WebView en Play Store y vuelve a abrir Campus Connect.",
-          "Recargar"]
+          "Recargar",
+          "Abrir Android System WebView en Play Store"]
       };
       var tongue = String(navigator.language || "en").slice(0, 2).toLowerCase();
       var lines = WORDS[tongue] || WORDS.en;
@@ -2276,6 +2389,11 @@
         box.appendChild(title);
         box.appendChild(detail);
         box.appendChild(again);
+        var update = document.createElement("a");
+        update.href = "market://details?id=com.google.android.webview";
+        update.textContent = lines[3];
+        update.style.cssText = "display:block;margin-top:12px;color:#fff;font-weight:700;text-decoration:underline";
+        box.appendChild(update);
         document.body.appendChild(box);
       }
 
@@ -2290,5 +2408,8 @@
     })();
   </script>
 
+  <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+  <script nomodule crossorigin id="vite-legacy-polyfill" src="/assets/polyfills-legacy-CWJMBqWU.js"></script>
+  <script nomodule crossorigin id="vite-legacy-entry" data-src="/assets/main-legacy-Cqdu-YRJ.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
 </body>
 </html>
